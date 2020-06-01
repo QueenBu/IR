@@ -4,7 +4,7 @@ package argumentretrivalsystem;
  *
  * @author Maximilian Schmidt
  */
-public class Argument {
+public class Argument implements Comparable(Argument) {
 
     private String id;
     private String title;
@@ -53,6 +53,12 @@ public class Argument {
     @Override
     public String toString() {
         return "Argument{" + "id=" + id + ", title=" + title + ", sourceUrl=" + sourceUrl + ", conclusion=" + conclusion + ", summary=" + summary + ", score=" + score + '}';
+    }
+
+    @Override
+    public int compareTo(Argument argument) {
+        return (this.getScore() < argument.getScore() ? -1 :
+                (this.getScore() == argument.getScore() ? 0 : 1));
     }
 
 }
