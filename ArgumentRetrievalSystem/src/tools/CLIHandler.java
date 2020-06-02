@@ -13,7 +13,7 @@ public class CLIHandler {
     }
 
     public String readUserInput(String message){
-        System.out.println(message);
+        writeToCL(message);
         return this.readUserInput();
     }
 
@@ -29,4 +29,9 @@ public class CLIHandler {
         } while (returnString == null);
         return returnString;
     }
+
+    public void writeToCL(Object text){
+        System.out.println(text);
+    }
+
 }
