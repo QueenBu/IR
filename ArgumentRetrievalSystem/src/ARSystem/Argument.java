@@ -1,9 +1,5 @@
 package ARSystem;
 
-/**
- *
- * @author Maximilian Schmidt
- */
 public class Argument implements Comparable<Argument> {
 
     private String id;

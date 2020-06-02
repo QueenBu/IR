@@ -3,10 +3,6 @@ package execution;
 import tools.HttpService;
 import ARSystem.Ranker;
 
-/**
- *
- * @author Maximilian Schmidt
- */
 public class Main {
 
     /**

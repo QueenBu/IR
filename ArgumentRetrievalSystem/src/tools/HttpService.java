@@ -9,10 +9,7 @@ import java.util.List;
 
 import ARSystem.Argument;
 import org.json.*;
-/**
- *
- * @author Maximilian Schmidt
- */
+
 public class HttpService {
 
     public List<Argument> getArguments(String query){
@@ -37,10 +34,10 @@ public class HttpService {
                 double score = json_arg.getJSONObject("explanation").getDouble("score");
                 args.add(new Argument(id, title, sourceUrl, conclusion, summary, score));
             }
-        } catch (MalformedURLException e) {
-            System.err.println("MalformedURLException: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("IOException: " + e.getMessage());
+        } catch (MalformedURLException ex) {
+            System.err.println("MalformedURLException: " + ex.getMessage());
+        } catch (IOException ex) {
+            System.err.println("IOException: " + ex.getMessage());
         }
 
         return args;
