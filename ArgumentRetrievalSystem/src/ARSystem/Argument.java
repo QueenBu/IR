@@ -1,10 +1,10 @@
-package argumentretrivalsystem;
+package ARSystem;
 
 /**
  *
  * @author Maximilian Schmidt
  */
-public class Argument implements Comparable(Argument) {
+public class Argument implements Comparable<Argument> {
 
     private String id;
     private String title;
@@ -57,8 +57,7 @@ public class Argument implements Comparable(Argument) {
 
     @Override
     public int compareTo(Argument argument) {
-        return (this.getScore() < argument.getScore() ? -1 :
-                (this.getScore() == argument.getScore() ? 0 : 1));
+        return (Double.compare(this.getScore(), argument.getScore()));
     }
 
 }

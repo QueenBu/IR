@@ -1,4 +1,7 @@
-package argumentretrivalsystem;
+package execution;
+
+import ARSystem.HttpService;
+import ARSystem.Ranker;
 
 /**
  *
@@ -11,7 +14,7 @@ public class Main {
      */
     public static void main(String[] args) {
         HttpService hs = new HttpService();
-        hs.getArguments("cookies");
+        Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
         
     }
 

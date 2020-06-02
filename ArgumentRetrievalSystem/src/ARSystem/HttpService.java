@@ -1,10 +1,11 @@
-package argumentretrivalsystem;
+package ARSystem;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.*;
 /**
@@ -12,11 +13,8 @@ import org.json.*;
  * @author Maximilian Schmidt
  */
 public class HttpService {
-    public void HttpService(){
-        
-    }
-    
-    public ArrayList<Argument> getArguments(String query){
+
+    public List<Argument> getArguments(String query){
         ArrayList<Argument> args = new ArrayList<>();
         try {
             URL url = new URL("https://www.args.me/api/v2/arguments?query=" + query);
@@ -26,7 +24,7 @@ public class HttpService {
             
             JSONObject json = new JSONObject(content);
             JSONArray json_args = json.getJSONArray("arguments");
-            Iterator it = json_args.iterator();
+            Iterator<Object> it = json_args.iterator();
             JSONObject json_arg;
             while(it.hasNext()){
                 json_arg = (JSONObject) it.next();
