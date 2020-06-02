@@ -1,8 +1,8 @@
 package tools;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +18,7 @@ public class HttpService {
     public List<Argument> getArguments(String query){
         ArrayList<Argument> args = new ArrayList<>();
         try {
-            URL url = new URL("https://www.args.me/api/v2/arguments?query=" + query);
+            URL url = new URL("https://www.args.me/api/v2/arguments?query=" + encodeValue(query));
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String content = br.readLine();
             br.close();
@@ -42,7 +42,16 @@ public class HttpService {
         } catch (IOException e) {
             System.err.println("IOException: " + e.getMessage());
         }
-        
+
         return args;
     }
+
+    private static String encodeValue(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex.getCause());
+        }
+    }
+
 }
