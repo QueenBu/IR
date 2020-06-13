@@ -14,6 +14,7 @@ public class Main {
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
         Manager manager = new Manager();
+        manager.makeIndex("C:\\parliamentary.json");
         manager.start();
     }
 
