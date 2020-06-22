@@ -19,7 +19,7 @@ public class JSONParser {
         JSONArray json_args = json.getJSONArray("arguments");
         this.json_iterator = json_args.iterator();
     }
-    
+
     public boolean next() {
         if (json_iterator.hasNext()){
             arg = (JSONObject) json_iterator.next();
@@ -56,9 +56,9 @@ public class JSONParser {
     public HashMap<String, String> getAuthorData(){
         HashMap<String, String> author_data = new HashMap<>();
         author_data.put("name", arg.getJSONObject("context").getString("author"));
-        author_data.put("imageUrl", arg.getJSONObject("context").getString("authorImage"));
-        author_data.put("organization", arg.getJSONObject("context").getString("authorOrganization"));
-        author_data.put("role", arg.getJSONObject("context").getString("authorRole"));
+        //author_data.put("imageUrl", arg.getJSONObject("context").getString("authorImage"));
+        //author_data.put("organization", arg.getJSONObject("context").getString("authorOrganization"));
+        //author_data.put("role", arg.getJSONObject("context").getString("authorRole"));
         return author_data;
     }
     
