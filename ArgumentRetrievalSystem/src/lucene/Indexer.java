@@ -24,7 +24,7 @@ public class Indexer {
         this.jsonPath = jsonPath;
     }
 
-    public void creatIndex(){
+    public void createIndex(){
         openIndex();
         addDocuments();
         finish();
