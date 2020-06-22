@@ -1,7 +1,6 @@
 package execution;
 
-import tools.HttpService;
-import ARSystem.Ranker;
+import java.nio.file.Paths;
 
 public class Main {
 
@@ -14,7 +13,7 @@ public class Main {
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
         Manager manager = new Manager();
-        manager.makeIndex("C:\\parliamentary.json");
+        manager.makeIndex(Paths.get("ArgumentRetrievalSystem", "corpus_files", "parliamentary.json").toAbsolutePath().normalize().toString());
         manager.start();
     }
 
