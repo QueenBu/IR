@@ -27,6 +27,7 @@ public class Searcher {
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
         IndexReader reader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(reader);
+        indexSearcher.setSimilarity(new TestSimilarity());
         queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
 
     }
