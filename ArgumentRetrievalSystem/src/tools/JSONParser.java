@@ -6,15 +6,16 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
+@Deprecated
 public class JSONParser {
     private String file_path;
     private Iterator<Object> json_iterator;
     private JSONObject arg;
 
+
     public JSONParser(String file_path) {
         this.file_path = file_path;
-        String source_data = FileParser.parseFile(file_path);
+        String source_data = "dumy"; //FileParser.parseFile(file_path);
         JSONObject json = new JSONObject(source_data);
         JSONArray json_args = json.getJSONArray("arguments");
         this.json_iterator = json_args.iterator();
