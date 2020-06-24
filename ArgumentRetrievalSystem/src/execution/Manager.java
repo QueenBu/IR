@@ -1,7 +1,5 @@
 package execution;
 
-import ARSystem.Argument;
-import ARSystem.Ranker;
 import lucene.Indexer;
 import lucene.LuceneConstants;
 import lucene.Searcher;
@@ -10,11 +8,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import tools.CLIHandler;
-import tools.HttpService;
-import tools.JSONParser;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Manager {
     private CLIHandler cli;
@@ -23,7 +18,7 @@ public class Manager {
 
     public void makeIndex(String filepath){
         Indexer indexer = new Indexer(indexPath, filepath);
-        indexer.creatIndex();
+        indexer.createIndex();
     }
     public void search(String searchQuery) throws IOException, ParseException {
          Searcher searcher = new Searcher(indexPath);

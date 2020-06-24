@@ -26,7 +26,7 @@ public class Indexer {
         this.jsonPath = jsonPath;
     }
 
-    public void creatIndex(){
+    public void createIndex(){
         openIndex();
         addDocuments();
         finish();
@@ -37,7 +37,8 @@ public class Indexer {
             Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-
+            iwc.setSimilarity(new SentimentSimilarity());
+            //rewrite index each time. for update use parameter:  IndexWriterConfig.OpenMode.CREATE_OR_APPEND
             iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             writer = new IndexWriter(indexDirectory, iwc);
         }catch (IOException ex){
