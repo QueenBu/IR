@@ -9,4 +9,5 @@ public class LuceneConstants {
     public static final String ID = "id";
     public static final String CONCLUSION = "conclusion";
     public static final String TOPIC = "topic";
+    public static final String AUTHORNAME = "authorName";
 }

@@ -8,7 +8,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import tools.JSONDocument;
 import tools.JSONParser;
+import tools.newFileParser;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -45,15 +47,17 @@ public class Indexer {
     }
 
     public void addDocuments(){
-        JSONParser jp = new JSONParser(jsonPath);
-        while(jp.next()){
+        newFileParser jp = new newFileParser(jsonPath);
+        for(JSONDocument jsonDoc: jp.getJsonDocumentArrayList()){
             Document document = new Document();
-            document.add( new TextField(LuceneConstants.CONTENTS, jp.getPremises().get(0).get("text"),TextField.Store.YES));
-            document.add( new StringField(LuceneConstants.STANCE, jp.getPremises().get(0).get("stance"), TextField.Store.YES));
-            document.add( new StringField(LuceneConstants.ID, jp.getId(), TextField.Store.YES));
-            document.add( new TextField(LuceneConstants.CONCLUSION, jp.getConclusion(),TextField.Store.YES));
-            document.add( new TextField(LuceneConstants.TOPIC, jp.getTopic(),TextField.Store.YES));
-
+            //TextField --> wird mit durchsucht
+            //StringField --> wird NICHT mit durchsucht
+            document.add( new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0),TextField.Store.YES));
+            document.add( new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
+            document.add( new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
+            document.add( new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),TextField.Store.YES));
+            document.add( new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(),TextField.Store.YES));
+            document.add( new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
             try{
                 writer.addDocument(document);
             }catch (IOException ex){
