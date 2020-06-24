@@ -9,7 +9,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import tools.JSONDocument;
-import tools.newFileParser;
+import tools.JSONFileParser;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -47,7 +47,7 @@ public class Indexer {
     }
 
     public void addDocuments(){
-        newFileParser jp = new newFileParser(jsonPath);
+        JSONFileParser jp = new JSONFileParser(jsonPath);
         for(JSONDocument jsonDoc: jp.getJsonDocumentArrayList()){
             Document document = new Document();
             //TextField --> wird mit durchsucht

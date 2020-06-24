@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class newFileParser {
+public class JSONFileParser {
 
     private ArrayList<JSONDocument> jsonDocumentArrayList = new ArrayList<>();
 
-    public newFileParser(String jsonPath){
+    public JSONFileParser(String jsonPath){
         process(jsonPath);
     }
 
