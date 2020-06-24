@@ -9,7 +9,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import tools.JSONDocument;
-import tools.JSONParser;
 import tools.newFileParser;
 
 import java.io.IOException;
