@@ -10,6 +10,7 @@ import java.util.List;
 import ARSystem.Argument;
 import org.json.*;
 
+@Deprecated
 public class HttpService {
 
     public List<Argument> getArguments(String query){
