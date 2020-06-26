@@ -10,6 +10,9 @@ public class SentimentValues {
 
     static HashMap<String, Integer> wordlist = new HashMap<String, Integer>();
 
+    static {
+        fillList();
+    }
 
     /**
      * read the emotional words into a list
@@ -37,13 +40,7 @@ public class SentimentValues {
      * @return 1 for an emotional word 0 otherwise
      */
     public static int termSentiment(String term) {
-        //i know we need to call this method somewhere else but i don't know where yet
-        fillList();
-        if(wordlist.containsKey(term)){
-            return 1;
-        } else{
-            return 0;
-        }
+        return wordlist.containsKey(term) ? 1 : 0;
     }
 
 }
