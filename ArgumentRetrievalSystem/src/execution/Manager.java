@@ -16,18 +16,19 @@ public class Manager {
     private String indexPath = "\\index";
     //private HttpService httpService;
 
-    public void makeIndex(String filepath){
+    public void makeIndex(String filepath) {
         Indexer indexer = new Indexer(indexPath, filepath);
         indexer.createIndex();
     }
-    public void search(String searchQuery) throws IOException, ParseException {
-         Searcher searcher = new Searcher(indexPath);
-         TopDocs hits = searcher.search(searchQuery);
-         System.out.println(hits.totalHits + " documents found.");
-            for (ScoreDoc scoreDoc : hits.scoreDocs) {
-                Document doc = searcher.getDocument(scoreDoc);
-                System.out.println("Text: " + doc.get(LuceneConstants.CONTENTS) + "\n Stance: " +doc.get(LuceneConstants.STANCE));
-            }
+
+    private void search(String searchQuery) throws IOException, ParseException {
+        Searcher searcher = new Searcher(indexPath);
+        TopDocs hits = searcher.search(searchQuery);
+        System.out.println(hits.totalHits + " documents found.");
+        for ( ScoreDoc scoreDoc : hits.scoreDocs ) {
+            Document doc = searcher.getDocument(scoreDoc);
+            System.out.println("Text: " + doc.get(LuceneConstants.CONTENTS) + "\n Stance: " + doc.get(LuceneConstants.STANCE));
+        }
 
     }
 
@@ -38,12 +39,12 @@ public class Manager {
 
         while ( true ) {
             String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
-            if (query.isEmpty()){
+            if ( query.isEmpty() ) {
                 break;
             }
             try {
                 search(query);
-            } catch (IOException | ParseException e) {
+            } catch ( IOException | ParseException e ) {
                 e.printStackTrace();
             }
 
