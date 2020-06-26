@@ -47,7 +47,7 @@ public class SentimentValues {
      * @param docTerm a String that needs emotional evaluation
      * @return 1 for an emotional word 0 otherwise
      */
-    public static int termSentiment(String docTerm) {
+    public static int absoluteSentiment(String docTerm) {
         // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
         final String[] docWords = docTerm.split("\\W+");
         int sum = 0;
@@ -63,6 +63,14 @@ public class SentimentValues {
 
     public static int termSentimentWithoutPatternMatching(String term) {
         return sentimentWordMap.containsKey(term) ? 1 : 0;
+    }
+
+    public static int termCount(String docTerm) {
+        return docTerm.split("\\W+").length;
+    }
+
+    public static double relativeSentiment(String docTerm) {
+        return (double) absoluteSentiment(docTerm) / termCount(docTerm);
     }
 
 }

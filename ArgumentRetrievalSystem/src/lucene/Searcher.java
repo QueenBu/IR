@@ -25,6 +25,7 @@ public class Searcher {
         IndexReader reader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(reader);
         indexSearcher.setSimilarity(new SentimentSimilarity());
+        // TODO: query muss angepasst werden, sodass das Field LuceneConstants.SENTIMENT als Faktor in die Query einfließt
         queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
 
     }

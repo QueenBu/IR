@@ -2,7 +2,7 @@ package lucene;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.DoublePoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
@@ -15,7 +15,7 @@ import tools.JSONFileParser;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static tools.SentimentValues.termSentiment;
+import static tools.SentimentValues.relativeSentiment;
 
 public class Indexer {
 
@@ -23,18 +23,18 @@ public class Indexer {
     private String indexPath;
     private String jsonPath;
 
-    public Indexer(String indexDirectoryPath, String jsonPath){
+    public Indexer(String indexDirectoryPath, String jsonPath) {
         this.indexPath = indexDirectoryPath;
         this.jsonPath = jsonPath;
     }
 
-    public void createIndex(){
+    public void createIndex() {
         openIndex();
         addDocuments();
         finish();
     }
 
-    public void openIndex(){
+    public void openIndex() {
         try {
             Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
             StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -43,42 +43,43 @@ public class Indexer {
             //rewrite index each time. for update use parameter:  IndexWriterConfig.OpenMode.CREATE_OR_APPEND
             iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             writer = new IndexWriter(indexDirectory, iwc);
-        }catch (IOException ex){
+        } catch ( IOException ex ) {
             System.err.println("Can not open Index");
             ex.printStackTrace();
         }
     }
 
-    public void addDocuments(){
+    public void addDocuments() {
         JSONFileParser jp = new JSONFileParser(jsonPath);
-        for(JSONDocument jsonDoc: jp.getJsonDocumentArrayList()){
+        for ( JSONDocument jsonDoc : jp.getJsonDocumentArrayList() ) {
             Document document = new Document();
             //TextField --> wird mit durchsucht
             //StringField --> wird NICHT mit durchsucht
 
-            document.add( new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0),TextField.Store.YES));
-            document.add( new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
-            document.add( new IntPoint(LuceneConstants.SENTIMENT, termSentiment(jsonDoc.getPremText().get(0))));
+            document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0), TextField.Store.YES));
+            document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
+            // TODO speedup here, it takes way too long
+            document.add(new DoublePoint(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(0))));
 
-            document.add( new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
-            document.add( new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),TextField.Store.YES));
-            document.add( new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(),TextField.Store.YES));
-            document.add( new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+            document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
+            document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
+            document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
+            document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
 
-            try{
+            try {
                 writer.addDocument(document);
-            }catch (IOException ex){
+            } catch ( IOException ex ) {
                 System.err.println("There is an IndexError");
                 ex.printStackTrace();
             }
         }
     }
 
-    public void finish(){
-        try{
+    public void finish() {
+        try {
             writer.commit();
             writer.close();
-        }catch (IOException ex){
+        } catch ( IOException ex ) {
             System.err.println("Error closing Index Writer");
             ex.printStackTrace();
         }
