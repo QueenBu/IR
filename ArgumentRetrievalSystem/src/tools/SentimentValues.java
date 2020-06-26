@@ -41,10 +41,22 @@ public class SentimentValues {
 
     /**
      * determine if a word is emotional
+     *
+     * searches for a RegEx match
+     *
      * @param term a String that needs emotional evaluation
      * @return 1 for an emotional word 0 otherwise
      */
     public static int termSentiment(String term) {
+        for ( String word : wordlist.keySet() ) {
+            if ( term.matches(word.replaceAll("\\*", ".*")) ) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public static int termSentimentWithoutPatternMatching(String term) {
         return wordlist.containsKey(term) ? 1 : 0;
     }
 
