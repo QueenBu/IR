@@ -25,8 +25,12 @@ public class SentimentValues {
 
             while ((line = br.readLine()) != null) {
                 String [] temp = line.split(";");
-                int value = Integer.parseInt(temp[1]);
-                wordlist.put(temp[0], value);
+                try {
+                    int value = Integer.parseInt(temp[ 1 ]);
+                    wordlist.put(temp[0], value);
+                } catch (NumberFormatException ex) {
+                    //skip
+                }
             }
 
         } catch (IOException e){
