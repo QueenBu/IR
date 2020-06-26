@@ -2,6 +2,7 @@ package lucene;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
@@ -13,6 +14,8 @@ import tools.JSONFileParser;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+
+import static tools.SentimentValues.termSentiment;
 
 public class Indexer {
 
@@ -52,12 +55,16 @@ public class Indexer {
             Document document = new Document();
             //TextField --> wird mit durchsucht
             //StringField --> wird NICHT mit durchsucht
+
             document.add( new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0),TextField.Store.YES));
             document.add( new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
+            document.add( new IntPoint(LuceneConstants.SENTIMENT, termSentiment(jsonDoc.getPremText().get(0))));
+
             document.add( new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
             document.add( new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),TextField.Store.YES));
             document.add( new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(),TextField.Store.YES));
             document.add( new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+
             try{
                 writer.addDocument(document);
             }catch (IOException ex){
