@@ -3,6 +3,7 @@ package tools;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -18,7 +19,7 @@ public class SentimentValues {
      * read the emotional words into a list
      */
     public static void fillList(){
-        String csvFile = "C:\\Users\\SutonToch\\Documents\\Uni\\IR\\ArgumentRetrievalSystem\\corpus_files\\sentimentwords.csv";
+        String csvFile = Paths.get("ArgumentRetrievalSystem", "corpus_files", "sentimentwords.csv").toAbsolutePath().normalize().toString();
         String line = "";
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
