@@ -13,6 +13,7 @@ import org.apache.lucene.util.SmallFloat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static tools.SentimentValues.termSentiment;
@@ -145,6 +146,10 @@ public class SentimentSimilarity extends Similarity {
                     decodeNorm(encodedNorm)) * idf());
         }
 
+        @Override
+        public Explanation explain(Explanation freq, long norm) {
+            return Explanation.match(this.score(freq.getValue().floatValue(), norm), "Math.max(0.0f, " + stats.getRelativeSentiment() + " * " + stats.getBoost() + " * " + tf(freq.getValue().floatValue(), decodeNorm(norm)) + " * " + idf() +  "), with freq of:", Collections.singleton(freq));
+        }
     }
 
     /**
