@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
@@ -25,13 +26,13 @@ public class Searcher {
         IndexReader reader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(reader);
         indexSearcher.setSimilarity(new SentimentSimilarity());
-        // TODO: query muss angepasst werden, sodass das Field LuceneConstants.SENTIMENT als Faktor in die Query einfließt
         queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
 
     }
 
     public TopDocs search(String searchQuery) throws ParseException, IOException {
-        query = queryParser.parse(searchQuery);
+        query = FunctionScoreQuery.boostByValue(queryParser.parse(searchQuery),
+                DoubleValuesSource.fromDoubleField(LuceneConstants.SENTIMENT));
         return indexSearcher.search(query, LuceneConstants.MAX_SEARCH);
     }
 

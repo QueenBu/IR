@@ -65,7 +65,8 @@ public class Indexer {
             document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0), TextField.Store.YES));
             document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
             // TODO speedup here, it takes way too long
-            document.add(new DoublePoint(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(0))));
+            // speed should be fixed now
+            document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(0))));
 
             document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
             document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
