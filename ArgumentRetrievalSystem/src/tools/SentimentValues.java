@@ -15,9 +15,6 @@ public class SentimentValues {
         createRegEx();
     }
 
-    /**
-     * read the emotional words into a list
-     */
     public static void createRegEx() {
         String csvPath =
                 Paths.get("ArgumentRetrievalSystem", "corpus_files", "sentimentwords.csv").toAbsolutePath().normalize().toString();
@@ -37,22 +34,14 @@ public class SentimentValues {
         }
     }
 
-    /**
-     * determine if a word is emotional
-     * <p>
-     * searches for a RegEx match
-     *
-     * @param docTerm a String that needs emotional evaluation
-     * @return 1 for an emotional word 0 otherwise
-     */
-    public static int absoluteSentiment(String docTerm) {
+    private static int absoluteSentiment(String docTerm) {
         // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
         return Arrays.stream(docTerm.split("\\W+")).mapToInt((docWord) ->
                 sentimentWordsPattern.matcher(docWord).matches() ? 1 : 0
         ).sum();
     }
 
-    public static int termCount(String docTerm) {
+    private static int termCount(String docTerm) {
         return docTerm.split("\\W+").length;
     }
 

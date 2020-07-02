@@ -2,10 +2,7 @@ package lucene;
 
 import java.io.File;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoublePoint;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -20,10 +17,10 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jdom2.Element;
+/*import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.XMLOutputter;
+import org.jdom2.output.XMLOutputter;*/
 
 import static tools.SentimentValues.relativeSentiment;
 
@@ -74,7 +71,7 @@ public class Indexer {
             document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
             document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
             document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
-            System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
+            //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
             //findTopic(jsonDoc.getPremText().get(0));    
             try {
                 writer.addDocument(document);
@@ -85,7 +82,7 @@ public class Indexer {
         }
     }
     
-    public String findTopic(String text){
+    public String findTopic(String text){/*
         text = text.toLowerCase();
         TreeMap<String, Integer> topics = new TreeMap<>();
         try {
@@ -126,7 +123,8 @@ public class Indexer {
                 top_frequency = frequency;
             }
         }
-        return top_topic;
+        return top_topic;*/
+        return "";
     }
 
     public void finish() {

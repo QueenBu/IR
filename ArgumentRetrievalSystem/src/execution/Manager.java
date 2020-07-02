@@ -15,7 +15,21 @@ public class Manager {
     private CLIHandler cli;
     private String indexPath = "\\index";
     private Searcher searcher;
-    //private HttpService httpService;
+
+    public void start() {
+        cli = new CLIHandler();
+        while ( true ) {
+            String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
+            if ( query.isEmpty() ) {
+                break;
+            }
+            try {
+                searchAndExplain(query);
+            } catch ( IOException | ParseException e ) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void makeIndex(String filepath) {
         Indexer indexer = new Indexer(indexPath, filepath);
@@ -40,34 +54,4 @@ public class Manager {
     private void searchAndExplain(String searchQuery) throws IOException, ParseException {
         searcher.searchAndExplain(searchQuery);
     }
-
-
-    public void start() {
-        cli = new CLIHandler();
-        //httpService = new HttpService();
-
-        while ( true ) {
-            String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
-            if ( query.isEmpty() ) {
-                break;
-            }
-            try {
-                //search(query);
-                searchAndExplain(query);
-            } catch ( IOException | ParseException e ) {
-                e.printStackTrace();
-            }
-
-/*
-
-            List<Argument> rankedArguments = Ranker.rank(httpService.getArguments(query));
-            for ( int index = 0; index < rankedArguments.size() && index < 10; index++ ) {
-                cli.writeToCL(rankedArguments.get(index));
-            }
-
-
- */
-        }
-    }
-
 }

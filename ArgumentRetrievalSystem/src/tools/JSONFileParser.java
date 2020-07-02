@@ -14,7 +14,7 @@ public class JSONFileParser {
 
     private ArrayList<JSONDocument> jsonDocumentArrayList = new ArrayList<>();
 
-    public JSONFileParser(String jsonPath){
+    public JSONFileParser(String jsonPath) {
         process(jsonPath);
     }
 
@@ -22,87 +22,87 @@ public class JSONFileParser {
         return jsonDocumentArrayList;
     }
 
-    public void process(String jsonPath){
+    public void process(String jsonPath) {
         File jsonFile = new File(jsonPath);
         JsonFactory jsonfactory = new JsonFactory();
-        try{
+        try {
             JsonParser parser = jsonfactory.createParser(jsonFile);
-            while(!parser.isClosed()){
+            while ( !parser.isClosed() ) {
                 JSONDocument jd = new JSONDocument();
                 JsonToken jsonToken = parser.nextToken();
-                while(!(parser.isClosed() || JsonToken.FIELD_NAME.equals(jsonToken))){
+                while ( !(parser.isClosed() || JsonToken.FIELD_NAME.equals(jsonToken)) ) {
                     jsonToken = parser.nextToken();
                 }
-                if(JsonToken.FIELD_NAME.equals(jsonToken)){
+                if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                     String fieldName = parser.getCurrentName();
                     jsonToken = parser.nextToken();
-                    if("id".equals(fieldName)){
+                    if ( "id".equals(fieldName) ) {
                         jd.setId(parser.getValueAsString());
-                        while(true){
-                            while(!JsonToken.FIELD_NAME.equals(jsonToken)) {
+                        while ( true ) {
+                            while ( !JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                 jsonToken = parser.nextToken();
                             }
-                            if(JsonToken.FIELD_NAME.equals(jsonToken)){
+                            if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                 fieldName = parser.getCurrentName();
                                 jsonToken = parser.nextToken();
-                                if("conclusion".equals(fieldName)){
+                                if ( "conclusion".equals(fieldName) ) {
                                     jd.setConclusion(parser.getValueAsString());
                                 }
-                                if("premises".equals(fieldName)){
-                                    while(!JsonToken.END_ARRAY.equals(jsonToken)){
+                                if ( "premises".equals(fieldName) ) {
+                                    while ( !JsonToken.END_ARRAY.equals(jsonToken) ) {
                                         jsonToken = parser.nextToken();
-                                        if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                        if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
-                                            if("text".equals(fieldName)){
+                                            if ( "text".equals(fieldName) ) {
                                                 ArrayList<String> temp = jd.getPremText();
                                                 temp.add(parser.getValueAsString());
                                                 jd.setPremText(temp);
                                             }
-                                            if("stance".equals(fieldName)){
+                                            if ( "stance".equals(fieldName) ) {
                                                 ArrayList<String> temp = jd.getPremStance();
                                                 temp.add(parser.getValueAsString());
                                                 jd.setPremStance(temp);
                                             }
-                                            if("annotations".equals(fieldName)){
-                                                do{
+                                            if ( "annotations".equals(fieldName) ) {
+                                                do {
                                                     jsonToken = parser.nextToken();
-                                                    if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                                    if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                                         fieldName = parser.getCurrentName();
                                                         jsonToken = parser.nextToken();
                                                     }
-                                                }while(!JsonToken.END_ARRAY.equals(jsonToken));
+                                                } while ( !JsonToken.END_ARRAY.equals(jsonToken) );
                                                 jsonToken = parser.nextToken();
                                             }
                                         }
                                     }
                                     jsonToken = parser.nextToken();
                                 }
-                                if("aspects".equals(fieldName)){
+                                if ( "aspects".equals(fieldName) ) {
                                     int i = 0;
-                                    while(!JsonToken.END_ARRAY.equals(jsonToken)) {
+                                    while ( !JsonToken.END_ARRAY.equals(jsonToken) ) {
                                         jsonToken = parser.nextToken();
-                                        if (JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                        if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
-                                            if("name".equals(fieldName)){
+                                            if ( "name".equals(fieldName) ) {
                                                 HashMap<String, Object> hm = new HashMap<>();
                                                 hm.put("name", parser.getValueAsString());
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.add(hm);
                                                 jd.setAspects(temp);
                                             }
-                                            if("weight".equals(fieldName)){
+                                            if ( "weight".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("weight", parser.getValueAsInt());
                                                 jd.setAspects(temp);
                                             }
-                                            if("normalizedWeight".equals(fieldName)){
+                                            if ( "normalizedWeight".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("normalizedWeight", parser.getValueAsDouble());
                                                 jd.setAspects(temp);
                                             }
-                                            if("rank".equals(fieldName)){
+                                            if ( "rank".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("rank", parser.getValueAsInt());
                                                 jd.setAspects(temp);
@@ -112,108 +112,108 @@ public class JSONFileParser {
                                     }
                                     jsonToken = parser.nextToken();
                                 }
-                                if("author".equals(fieldName)){
+                                if ( "author".equals(fieldName) ) {
                                     jd.setAutName(parser.getValueAsString());
                                 }
-                                if("mode".equals(fieldName)){
+                                if ( "mode".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("mode", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTitle".equals(fieldName)){
+                                if ( "sourceTitle".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTitle", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceText".equals(fieldName)){
+                                if ( "sourceText".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceText", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("date".equals(fieldName)){
+                                if ( "date".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("date", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextConclusionStart".equals(fieldName)){
+                                if ( "sourceTextConclusionStart".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextConclusionStart", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextConclusionEnd".equals(fieldName)){
+                                if ( "sourceTextConclusionEnd".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextConclusionEnd", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextPremiseStart".equals(fieldName)){
+                                if ( "sourceTextPremiseStart".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextPremiseStart", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextPremiseEnd".equals(fieldName)){
+                                if ( "sourceTextPremiseEnd".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextPremiseEnd", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("topic".equals(fieldName)){
+                                if ( "topic".equals(fieldName) ) {
                                     jd.setTopic(parser.getValueAsString());
                                     break;
                                 }
                             }
                         }
                     }
-                    if("arguments".equals(fieldName)){
-                        while(!JsonToken.END_ARRAY.equals(jsonToken)){
-                            while(!JsonToken.FIELD_NAME.equals(jsonToken)) {
+                    if ( "arguments".equals(fieldName) ) {
+                        while ( !JsonToken.END_ARRAY.equals(jsonToken) ) {
+                            while ( !JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                 jsonToken = parser.nextToken();
                             }
-                            if(JsonToken.FIELD_NAME.equals(jsonToken)){
+                            if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                 fieldName = parser.getCurrentName();
                                 jsonToken = parser.nextToken();
-                                if("id".equals(fieldName)){
+                                if ( "id".equals(fieldName) ) {
                                     jd.setId(parser.getValueAsString());
                                 }
-                                if("conclusion".equals(fieldName)){
+                                if ( "conclusion".equals(fieldName) ) {
                                     jd.setConclusion(parser.getValueAsString());
                                 }
-                                if("premises".equals(fieldName)){
-                                    while(!JsonToken.END_ARRAY.equals(jsonToken)){
+                                if ( "premises".equals(fieldName) ) {
+                                    while ( !JsonToken.END_ARRAY.equals(jsonToken) ) {
                                         jsonToken = parser.nextToken();
-                                        if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                        if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
-                                            if("text".equals(fieldName)){
+                                            if ( "text".equals(fieldName) ) {
                                                 ArrayList<String> temp = jd.getPremText();
                                                 temp.add(parser.getValueAsString());
                                                 jd.setPremText(temp);
                                             }
-                                            if("stance".equals(fieldName)){
+                                            if ( "stance".equals(fieldName) ) {
                                                 ArrayList<String> temp = jd.getPremStance();
                                                 temp.add(parser.getValueAsString());
                                                 jd.setPremStance(temp);
                                             }
-                                            if("annotations".equals(fieldName)){
-                                                do{
+                                            if ( "annotations".equals(fieldName) ) {
+                                                do {
                                                     jsonToken = parser.nextToken();
-                                                    if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                                    if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                                         fieldName = parser.getCurrentName();
                                                         jsonToken = parser.nextToken();
                                                     }
-                                                }while(!JsonToken.END_ARRAY.equals(jsonToken));
+                                                } while ( !JsonToken.END_ARRAY.equals(jsonToken) );
                                                 jsonToken = parser.nextToken();
                                             }
                                         }
                                     }
                                     jsonToken = parser.nextToken();
                                 }
-                                if("aspects".equals(fieldName)){
+                                if ( "aspects".equals(fieldName) ) {
                                     int i = 0;
-                                    while(!JsonToken.END_ARRAY.equals(jsonToken)) {
+                                    while ( !JsonToken.END_ARRAY.equals(jsonToken) ) {
                                         jsonToken = parser.nextToken();
-                                        if (JsonToken.FIELD_NAME.equals(jsonToken)) {
+                                        if ( JsonToken.FIELD_NAME.equals(jsonToken) ) {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
-                                            if("name".equals(fieldName)){
+                                            if ( "name".equals(fieldName) ) {
                                                 HashMap<String, Object> hm = new HashMap<>();
                                                 hm.put("name", parser.getValueAsString());
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
@@ -221,17 +221,17 @@ public class JSONFileParser {
                                                 jd.setAspects(temp);
 
                                             }
-                                            if("weight".equals(fieldName)){
+                                            if ( "weight".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("weight", parser.getValueAsInt());
                                                 jd.setAspects(temp);
                                             }
-                                            if("normalizedWeight".equals(fieldName)){
+                                            if ( "normalizedWeight".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("normalizedWeight", parser.getValueAsDouble());
                                                 jd.setAspects(temp);
                                             }
-                                            if("rank".equals(fieldName)){
+                                            if ( "rank".equals(fieldName) ) {
                                                 ArrayList<HashMap<String, Object>> temp = jd.getAspects();
                                                 temp.get(i).put("rank", parser.getValueAsInt());
                                                 jd.setAspects(temp);
@@ -241,50 +241,50 @@ public class JSONFileParser {
                                     }
                                     jsonToken = parser.nextToken();
                                 }
-                                if("author".equals(fieldName)){
+                                if ( "author".equals(fieldName) ) {
                                     jd.setAutName(parser.getValueAsString());
                                 }
-                                if("mode".equals(fieldName)){
+                                if ( "mode".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("mode", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTitle".equals(fieldName)){
+                                if ( "sourceTitle".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTitle", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceText".equals(fieldName)){
+                                if ( "sourceText".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceText", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("date".equals(fieldName)){
+                                if ( "date".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("date", parser.getValueAsString());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextConclusionStart".equals(fieldName)){
+                                if ( "sourceTextConclusionStart".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextConclusionStart", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextConclusionEnd".equals(fieldName)){
+                                if ( "sourceTextConclusionEnd".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextConclusionEnd", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextPremiseStart".equals(fieldName)){
+                                if ( "sourceTextPremiseStart".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextPremiseStart", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("sourceTextPremiseEnd".equals(fieldName)){
+                                if ( "sourceTextPremiseEnd".equals(fieldName) ) {
                                     HashMap<String, Object> temp = jd.getSourceInfo();
                                     temp.put("sourceTextPremiseEnd", parser.getValueAsInt());
                                     jd.setSourceInfo(temp);
                                 }
-                                if("topic".equals(fieldName)){
+                                if ( "topic".equals(fieldName) ) {
                                     jd.setTopic(parser.getValueAsString());
                                     break;
                                 }
@@ -292,13 +292,13 @@ public class JSONFileParser {
                         }
                     }
                 }
-                if(jd.getId() != null){
+                if ( jd.getId() != null ) {
                     jsonDocumentArrayList.add(jd);
                 }
             }
-        } catch (JsonParseException e) {
+        } catch ( JsonParseException e ) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
         }
     }
