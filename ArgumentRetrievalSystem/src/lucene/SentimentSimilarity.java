@@ -12,10 +12,8 @@ import org.apache.lucene.search.similarities.SimilarityBase;
 import org.apache.lucene.util.SmallFloat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import static tools.SentimentValues.termSentiment;
 
 public class SentimentSimilarity extends Similarity {
 
@@ -74,15 +72,10 @@ public class SentimentSimilarity extends Similarity {
     public final SimScorer scorer(float boost, CollectionStatistics collectionStats, TermStatistics... termStats) {
         SimScorer[] weights = new SimScorer[ termStats.length ];
 
-        long absoluteSentiment =
-                Arrays.stream(termStats).mapToLong(ts -> termSentiment(ts.term().utf8ToString())).sum();
-
-        float relativeSentiment = absoluteSentiment / (float) termStats.length;
-
         for ( int i = 0; i < termStats.length; i++ ) {
 
-            ExtendedStats stats = newStats(collectionStats.field(), boost);
-            fillFullStats(stats, collectionStats, termStats[ i ], relativeSentiment);
+            BasicStats stats = newStats(collectionStats.field(), boost);
+            fillFullStats(stats, collectionStats, termStats[ i ]);
             weights[ i ] = new TestSimScorer(stats);
         }
         if ( weights.length == 1 ) {
@@ -96,17 +89,14 @@ public class SentimentSimilarity extends Similarity {
     /**
      * Factory method to return a custom stats object
      */
-    protected ExtendedStats newStats(String field, double boost) {
-        return new ExtendedStats(field, boost);
+    protected BasicStats newStats(String field, double boost) {
+        return new BasicStats(field, boost);
     }
 
     /**
      * Fills all member fields defined in {@link BasicStats} in {@code stats}.
      */
-    protected void fillFullStats(ExtendedStats stats, CollectionStatistics collectionStats, TermStatistics termStats,
-                                 float relativeSentiment) {
-
-        stats.setRelativeSentiment(relativeSentiment);
+    protected void fillFullStats(BasicStats stats, CollectionStatistics collectionStats, TermStatistics termStats) {
 
         assert termStats.totalTermFreq() <= collectionStats.sumTotalTermFreq();
         assert termStats.docFreq() <= collectionStats.sumDocFreq();
@@ -121,13 +111,13 @@ public class SentimentSimilarity extends Similarity {
 
     static final class TestSimScorer extends SimScorer {
 
-        final ExtendedStats stats;
+        final BasicStats stats;
 
         int decodeNorm(long norm) {
             return LENGTH_TABLE[ Byte.toUnsignedInt((byte) norm) ];
         }
 
-        TestSimScorer(ExtendedStats stats) {
+        TestSimScorer(BasicStats stats) {
             this.stats = stats;
         }
 
@@ -141,10 +131,14 @@ public class SentimentSimilarity extends Similarity {
 
         @Override
         public float score(float freq, long encodedNorm) {
-            return Math.max(0.0f, stats.getRelativeSentiment() * (float) stats.getBoost() * tf(freq,
-                    decodeNorm(encodedNorm)) * idf());
+            return Math.max(0.0f, (float) stats.getBoost() * tf(freq, decodeNorm(encodedNorm)) * idf());
         }
 
+        @Override
+        public Explanation explain(Explanation freq, long norm) {
+            return Explanation.match(this.score(freq.getValue().floatValue(), norm),
+                    "Math.max(0.0f, " + stats.getBoost() + " * " + tf(freq.getValue().floatValue(), decodeNorm(norm)) + " * " + idf() + "), with freq of:", Collections.singleton(freq));
+        }
     }
 
     /**

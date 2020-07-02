@@ -14,21 +14,31 @@ import java.io.IOException;
 public class Manager {
     private CLIHandler cli;
     private String indexPath = "\\index";
+    private Searcher searcher;
     //private HttpService httpService;
 
-    public void makeIndex(String filepath){
+    public void makeIndex(String filepath) {
         Indexer indexer = new Indexer(indexPath, filepath);
         indexer.createIndex();
+        try {
+            searcher = new Searcher(indexPath);
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
     }
-    public void search(String searchQuery) throws IOException, ParseException {
-         Searcher searcher = new Searcher(indexPath);
-         TopDocs hits = searcher.search(searchQuery);
-         System.out.println(hits.totalHits + " documents found.");
-            for (ScoreDoc scoreDoc : hits.scoreDocs) {
-                Document doc = searcher.getDocument(scoreDoc);
-                System.out.println("Text: " + doc.get(LuceneConstants.CONTENTS) + "\n Stance: " +doc.get(LuceneConstants.STANCE));
-            }
 
+    private void search(String searchQuery) throws IOException, ParseException {
+        TopDocs hits = searcher.search(searchQuery);
+        System.out.println(hits.totalHits + " documents found.");
+        for ( ScoreDoc scoreDoc : hits.scoreDocs ) {
+            Document doc = searcher.getDocument(scoreDoc);
+            System.out.println("Text: " + doc.get(LuceneConstants.CONTENTS) + "\n Stance: " + doc.get(LuceneConstants.STANCE));
+        }
+
+    }
+
+    private void searchAndExplain(String searchQuery) throws IOException, ParseException {
+        searcher.searchAndExplain(searchQuery);
     }
 
 
@@ -38,12 +48,13 @@ public class Manager {
 
         while ( true ) {
             String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
-            if (query.isEmpty()){
+            if ( query.isEmpty() ) {
                 break;
             }
             try {
-                search(query);
-            } catch (IOException | ParseException e) {
+                //search(query);
+                searchAndExplain(query);
+            } catch ( IOException | ParseException e ) {
                 e.printStackTrace();
             }
 

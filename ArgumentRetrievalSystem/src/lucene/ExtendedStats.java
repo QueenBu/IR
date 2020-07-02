@@ -1,7 +1,7 @@
 package lucene;
 
 import org.apache.lucene.search.similarities.BasicStats;
-
+@Deprecated
 public class ExtendedStats extends BasicStats {
 
     private float relativeSentiment;
