@@ -64,8 +64,6 @@ public class Indexer {
             //StringField --> wird NICHT mit durchsucht
             document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0), TextField.Store.YES));
             document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
-            // TODO speedup here, it takes way too long
-            // speed should be fixed now
             document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(0))));
 
             document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
@@ -88,7 +86,7 @@ public class Indexer {
         TreeMap<String, Integer> topics = new TreeMap<>();
         try {
             SAXBuilder builder = new SAXBuilder();
-            org.jdom2.Document doc = builder.build(new File("policy_agendas_english.xml"));
+            org.jdom2.Document doc = builder.build(new File("corpus_files/policy_agendas_english.xml"));
             XMLOutputter fmt = new XMLOutputter();
             
             Element dictionary = doc.getRootElement();
