@@ -1,5 +1,6 @@
 package lucene;
 
+import java.io.File;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
@@ -13,6 +14,15 @@ import tools.JSONFileParser;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 public class Indexer {
 
@@ -45,7 +55,7 @@ public class Indexer {
             ex.printStackTrace();
         }
     }
-
+    
     public void addDocuments(){
         JSONFileParser jp = new JSONFileParser(jsonPath);
         for(JSONDocument jsonDoc: jp.getJsonDocumentArrayList()){
@@ -58,6 +68,8 @@ public class Indexer {
             document.add( new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),TextField.Store.YES));
             document.add( new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(),TextField.Store.YES));
             document.add( new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+            System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
+            //findTopic(jsonDoc.getPremText().get(0));
             try{
                 writer.addDocument(document);
             }catch (IOException ex){
@@ -65,6 +77,50 @@ public class Indexer {
                 ex.printStackTrace();
             }
         }
+    }
+    
+    public String findTopic(String text){
+        text = text.toLowerCase();
+        TreeMap<String, Integer> topics = new TreeMap<>();
+        try {
+            SAXBuilder builder = new SAXBuilder();
+            org.jdom2.Document doc = builder.build(new File("policy_agendas_english.xml"));
+            XMLOutputter fmt = new XMLOutputter();
+            
+            Element dictionary = doc.getRootElement();
+            List cnodes = (List) dictionary.getChildren();
+            for(Object cnode : cnodes){
+                String cnode_value = ((Element) cnode).getAttributeValue("name").toLowerCase();
+                topics.put(cnode_value, 0);
+                List pnodes = (List) ((Element) cnode).getChildren();
+                for(Object pnode : pnodes){
+                    String pnode_value = ((Element) pnode).getAttributeValue("name").toLowerCase();
+                    int offset = text.indexOf(pnode_value);
+                    while(offset != -1){
+                        topics.replace(cnode_value, topics.get(cnode_value) + 1);
+                        offset = text.indexOf(pnode_value, offset + 1);
+                    }
+                }
+            }
+        } catch (JDOMException ex) {
+            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        System.out.println(topics);
+        
+        String top_topic = "";
+        int top_frequency = 0;
+        for(Entry<String, Integer> e : topics.entrySet()){
+            String topic = e.getKey();
+            int frequency = e.getValue();
+            if (frequency > top_frequency){
+                top_topic = topic;
+                top_frequency = frequency;
+            }
+        }
+        return top_topic;
     }
 
     public void finish(){
