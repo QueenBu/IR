@@ -59,28 +59,39 @@ public class Indexer {
     public void addDocuments() {
         JSONFileParser jp = new JSONFileParser(jsonPath);
         for ( JSONDocument jsonDoc : jp.getJsonDocumentArrayList() ) {
-            Document document = new Document();
-            //TextField --> wird mit durchsucht
-            //StringField --> wird NICHT mit durchsucht
-            document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(0), TextField.Store.YES));
-            document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(0), TextField.Store.YES));
-            document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(0))));
+            for (int i = 0; i < jsonDoc.getPremText().size(); i++) {
+                System.out.println(i);
 
-            document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
-            document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
-            document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
-            document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
-            //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
-            //findTopic(jsonDoc.getPremText().get(0));    
-            try {
-                writer.addDocument(document);
-            } catch ( IOException ex ) {
-                System.err.println("There is an IndexError");
-                ex.printStackTrace();
+                Document document = new Document();
+                //TextField --> wird mit durchsucht
+                //StringField --> wird NICHT mit durchsucht
+                document.add(
+                        new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(i), TextField.Store.YES)
+                );
+                document.add(
+                        new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(i), TextField.Store.YES)
+                );
+                document.add(
+                        new DoubleDocValuesField(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(i)))
+                );
+
+                document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
+                document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
+                document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
+                document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+
+                //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
+                //findTopic(jsonDoc.getPremText().get(0));
+                try {
+                    writer.addDocument(document);
+                } catch ( IOException ex ) {
+                    System.err.println("There is an IndexError");
+                    ex.printStackTrace();
+                }
             }
         }
     }
-    
+
     public String findTopic(String text){/*
         text = text.toLowerCase();
         TreeMap<String, Integer> topics = new TreeMap<>();
