@@ -7,10 +7,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
+/**
+ * Parses the json found with a given path-string on the fly.
+ * Does not copy any information to heap which is why it is a) faster and b) does not crash.
+ * Implements Iterator<JSONDocument> to provide an easy to use interface to walk through the json file.
+ * Implements AutoCloseable to provide easy use inside a try-with-resources-statement.
+ */
 public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable {
 
     JsonReader reader;
 
+    /**
+     * initializes the streamed reader and skips the first two opening brackets + one jsonName
+     *
+     * @param jsonPath where the .json file is found
+     * @throws IOException on any IOException thrown by {@link ArgumentsIterator#reader}
+     */
     public ArgumentsIterator(String jsonPath) throws IOException {
         reader = new JsonReader(new InputStreamReader(new FileInputStream(jsonPath)));
         reader.beginObject();
@@ -18,6 +30,15 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
         reader.beginArray();
     }
 
+    /**
+     * Checks with {@link ArgumentsIterator#reader}{@code .hasNext()} whether there is another json snippet coming.
+     * It is only called inside the "arguments" array inside the given json file, after an array element has been
+     * processed.
+     * This way, one can read this method as: if there is another argument to be found, return true.
+     *
+     * @return true if there is another {@link JSONDocument} to be found in the file. false else and ony any
+     * IOException.
+     */
     @Override
     public boolean hasNext() {
         try {
@@ -28,6 +49,12 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
         }
     }
 
+    /**
+     * Walks through the "arguments" array of the json file. Parses the information as a {@link JSONDocument} and
+     * returns it.
+     *
+     * @return the next {@link JSONDocument} extracted from the next "arguments"-array element.
+     */
     @Override
     public JSONDocument next() {
         JSONDocument jsonDocument = new JSONDocument();
@@ -53,6 +80,13 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
         return jsonDocument;
     }
 
+    /**
+     * Method extracted for clean code. Is called in {@link ArgumentsIterator#next()} and writes the "premises"
+     * information into the given jsonDocument.
+     *
+     * @param jsonDocument to write "premises" info into
+     * @throws IOException on any IOException thrown by {@link ArgumentsIterator#reader}.
+     */
     private void readPremises(JSONDocument jsonDocument) throws IOException {
         reader.beginArray();
 
@@ -97,6 +131,13 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
         reader.skipValue(); // skips whole array
     }
 
+    /**
+     * Method extracted for clean code. Is called in {@link ArgumentsIterator#next()} and writes the "context"
+     * information into the given jsonDocument.
+     *
+     * @param jsonDocument to write "context" info into
+     * @throws IOException on any IOException thrown by {@link ArgumentsIterator#reader}.
+     */
     private void readContext(JSONDocument jsonDocument) throws IOException {
         reader.beginObject();
 
@@ -116,22 +157,17 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
         reader.endObject();
     }
 
+    /**
+     * closes the {@link ArgumentsIterator#reader}
+     *
+     * @throws IOException if {@code ArgumentsIterator#reader#close()} throws an Exception
+     */
     public void close() throws IOException {
+        // Last two "closing operations" aren't needed since the resource does not get blocked if the closing parts of
+        // the json object or json array aren't read in. Less error-prone.
+        //reader.endArray();
+        //reader.endObject();
+
         reader.close();
-    }
-
-
-    public static void main(String[] args) {
-        try {
-            ArgumentsIterator ai = new ArgumentsIterator("ArgumentRetrievalSystem/corpus_files/parliamentary.json");
-            int i = 0;
-            while ( ai.hasNext() ) {
-                //ai.next();
-                System.out.println(i++ + " " + ai.next());
-            }
-            ai.close();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
     }
 }
