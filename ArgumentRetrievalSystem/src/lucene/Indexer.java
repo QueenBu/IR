@@ -1,28 +1,28 @@
 package lucene;
 
-import java.io.File;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoubleDocValuesField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import tools.ArgumentsIterator;
 import tools.JSONDocument;
-import tools.JSONFileParser;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static execution.Main.getTestFile;
+import static tools.SentimentValues.relativeSentiment;
+
 /*import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;*/
-
-import static tools.SentimentValues.relativeSentiment;
 
 public class Indexer {
 
@@ -46,7 +46,8 @@ public class Indexer {
             Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
             StandardAnalyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-            iwc.setSimilarity(new SentimentSimilarity());
+            iwc.setSimilarity(new TFIDFSimilarity());
+            //iwc.setSimilarity(new ClassicSimilarity());
             //rewrite index each time. for update use parameter:  IndexWriterConfig.OpenMode.CREATE_OR_APPEND
             iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
             writer = new IndexWriter(indexDirectory, iwc);
@@ -57,22 +58,61 @@ public class Indexer {
     }
 
     public void addDocuments() {
+        try ( ArgumentsIterator ai = new ArgumentsIterator(getTestFile("parliamentary.json")) ) {
+            while ( ai.hasNext() ) {
+                JSONDocument jsonDoc = ai.next();
+                for ( int i = 0; i < jsonDoc.getPremisesCount(); i++ ) {
+                    Document document = new Document();
+
+                    document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremTexts().get(i),
+                            TextField.Store.YES)
+                    );
+                    document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStances().get(i),
+                            TextField.Store.YES)
+                    );
+                    document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
+                            relativeSentiment(jsonDoc.getPremTexts().get(i)))
+                    );
+
+                    document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
+                    document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),
+                            TextField.Store.YES));
+                    document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
+                    document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+
+                    //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
+                    //findTopic(jsonDoc.getPremText().get(0));
+                    try {
+                        writer.addDocument(document);
+                    } catch ( IOException ex ) {
+                        System.err.println("There is an IndexError");
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+/*
+    public void addDocuments_old() {
         JSONFileParser jp = new JSONFileParser(jsonPath);
         for ( JSONDocument jsonDoc : jp.getJsonDocumentArrayList() ) {
-            for (int i = 0; i < jsonDoc.getPremText().size(); i++) {
+            for ( int i = 0; i < jsonDoc.getPremTexts().size(); i++ ) {
                 System.out.println(i);
 
                 Document document = new Document();
                 //TextField --> wird mit durchsucht
                 //StringField --> wird NICHT mit durchsucht
                 document.add(
-                        new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremText().get(i), TextField.Store.YES)
+                        new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremTexts().get(i), TextField.Store.YES)
                 );
                 document.add(
-                        new StringField(LuceneConstants.STANCE, jsonDoc.getPremStance().get(i), TextField.Store.YES)
+                        new StringField(LuceneConstants.STANCE, jsonDoc.getPremStances().get(i), TextField.Store.YES)
                 );
                 document.add(
-                        new DoubleDocValuesField(LuceneConstants.SENTIMENT, relativeSentiment(jsonDoc.getPremText().get(i)))
+                        new DoubleDocValuesField(LuceneConstants.SENTIMENT,
+                                relativeSentiment(jsonDoc.getPremTexts().get(i)))
                 );
 
                 document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
@@ -91,13 +131,14 @@ public class Indexer {
             }
         }
     }
+*/
 
-    public String findTopic(String text){/*
+    public String findTopic(String text) {/*
         text = text.toLowerCase();
         TreeMap<String, Integer> topics = new TreeMap<>();
         try {
             SAXBuilder builder = new SAXBuilder();
-            org.jdom2.Document doc = builder.build(new File("corpus_files/policy_agendas_english.xml"));
+            org.jdom2.Document doc = builder.build(new File(execution.Main.getTestFile("policy_agendas_english.xml")));
             XMLOutputter fmt = new XMLOutputter();
             
             Element dictionary = doc.getRootElement();

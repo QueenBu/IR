@@ -8,6 +8,7 @@ import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -25,7 +26,8 @@ public class Searcher {
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
         IndexReader reader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(reader);
-        indexSearcher.setSimilarity(new SentimentSimilarity());
+        indexSearcher.setSimilarity(new TFIDFSimilarity());
+        //indexSearcher.setSimilarity(new ClassicSimilarity());
         queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
 
     }

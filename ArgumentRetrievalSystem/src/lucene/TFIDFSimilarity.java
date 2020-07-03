@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SentimentSimilarity extends Similarity {
+public class TFIDFSimilarity extends Similarity {
 
     @Override
     public String toString() {
@@ -65,7 +65,7 @@ public class SentimentSimilarity extends Similarity {
      * @param collectionStats Informationen über alle Dokumente in der Sammlung
      * @param termStats       Menge von: Informationen zu einem Term bezüglich ALLER Dokumente
      * @return SimScorer, welcher dann (intern) nur noch die Häufigkeit des Terms in EINEM Dokument und den über
-     * {@link SentimentSimilarity#computeNorm} berechneten Normwert erhält und dann einen Score für ein Dokument zu
+     * {@link TFIDFSimilarity#computeNorm} berechneten Normwert erhält und dann einen Score für ein Dokument zu
      * der Suchanfrage (Menge an Termen) gibt
      */
     @Override
@@ -76,7 +76,7 @@ public class SentimentSimilarity extends Similarity {
 
             BasicStats stats = newStats(collectionStats.field(), boost);
             fillFullStats(stats, collectionStats, termStats[ i ]);
-            weights[ i ] = new TestSimScorer(stats);
+            weights[ i ] = new TFIDFSimScorer(stats);
         }
         if ( weights.length == 1 ) {
             return weights[ 0 ];
@@ -109,7 +109,7 @@ public class SentimentSimilarity extends Similarity {
     }
 
 
-    static final class TestSimScorer extends SimScorer {
+    static final class TFIDFSimScorer extends SimScorer {
 
         final BasicStats stats;
 
@@ -117,7 +117,7 @@ public class SentimentSimilarity extends Similarity {
             return LENGTH_TABLE[ Byte.toUnsignedInt((byte) norm) ];
         }
 
-        TestSimScorer(BasicStats stats) {
+        TFIDFSimScorer(BasicStats stats) {
             this.stats = stats;
         }
 
@@ -137,7 +137,7 @@ public class SentimentSimilarity extends Similarity {
         @Override
         public Explanation explain(Explanation freq, long norm) {
             return Explanation.match(this.score(freq.getValue().floatValue(), norm),
-                    "Math.max(0.0f, " + stats.getBoost() + " * " + tf(freq.getValue().floatValue(), decodeNorm(norm)) + " * " + idf() + "), with freq of:", Collections.singleton(freq));
+                    "Math.max(0.0f, boost[" + stats.getBoost() + "] * tf[" + tf(freq.getValue().floatValue(), decodeNorm(norm)) + "] * idf[" + idf() + "], with freq of:", Collections.singleton(freq));
         }
     }
 

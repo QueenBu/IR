@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@Deprecated
 public class JSONFileParser {
 
     private ArrayList<JSONDocument> jsonDocumentArrayList = new ArrayList<>();
@@ -55,14 +56,14 @@ public class JSONFileParser {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
                                             if ( "text".equals(fieldName) ) {
-                                                ArrayList<String> temp = jd.getPremText();
+                                                ArrayList<String> temp = jd.getPremTexts();
                                                 temp.add(parser.getValueAsString());
-                                                jd.setPremText(temp);
+                                                jd.setPremTexts(temp);
                                             }
                                             if ( "stance".equals(fieldName) ) {
-                                                ArrayList<String> temp = jd.getPremStance();
+                                                ArrayList<String> temp = jd.getPremStances();
                                                 temp.add(parser.getValueAsString());
-                                                jd.setPremStance(temp);
+                                                jd.setPremStances(temp);
                                             }
                                             if ( "annotations".equals(fieldName) ) {
                                                 do {
@@ -183,14 +184,14 @@ public class JSONFileParser {
                                             fieldName = parser.getCurrentName();
                                             jsonToken = parser.nextToken();
                                             if ( "text".equals(fieldName) ) {
-                                                ArrayList<String> temp = jd.getPremText();
+                                                ArrayList<String> temp = jd.getPremTexts();
                                                 temp.add(parser.getValueAsString());
-                                                jd.setPremText(temp);
+                                                jd.setPremTexts(temp);
                                             }
                                             if ( "stance".equals(fieldName) ) {
-                                                ArrayList<String> temp = jd.getPremStance();
+                                                ArrayList<String> temp = jd.getPremStances();
                                                 temp.add(parser.getValueAsString());
-                                                jd.setPremStance(temp);
+                                                jd.setPremStances(temp);
                                             }
                                             if ( "annotations".equals(fieldName) ) {
                                                 do {

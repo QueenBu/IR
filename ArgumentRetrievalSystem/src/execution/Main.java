@@ -1,8 +1,10 @@
 package execution;
 
-import java.nio.file.Paths;
-
 public class Main {
+
+    public static String getTestFile(String filename) {
+        return "ArgumentRetrievalSystem/corpus_files/" + filename;
+    }
 
     /**
      * @param args the command line arguments
@@ -13,7 +15,7 @@ public class Main {
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
         Manager manager = new Manager();
-        manager.makeIndex(Paths.get("ArgumentRetrievalSystem", "corpus_files", "parliamentary.json").toAbsolutePath().normalize().toString());
+        manager.makeIndex(getTestFile("parliamentary.json"));
         manager.start();
     }
 

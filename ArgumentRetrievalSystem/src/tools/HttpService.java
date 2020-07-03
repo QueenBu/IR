@@ -33,7 +33,8 @@ public class HttpService {
                 String conclusion = json_arg.getString("conclusion");
                 String summary = json_arg.getString("summary");
                 double score = json_arg.getJSONObject("explanation").getDouble("score");
-                args.add(new Argument(id, title, sourceUrl, conclusion, summary, score));
+                // usage changed
+                //args.add(new Argument(id, title, sourceUrl, conclusion, summary, score));
             }
         } catch (MalformedURLException ex) {
             System.err.println("MalformedURLException: " + ex.getMessage());
