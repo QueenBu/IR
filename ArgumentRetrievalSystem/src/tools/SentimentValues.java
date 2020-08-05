@@ -3,7 +3,6 @@ package tools;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -16,8 +15,8 @@ public class SentimentValues {
     }
 
     public static void createRegEx() {
-        String csvPath =
-                Paths.get("ArgumentRetrievalSystem", "corpus_files", "sentimentwords.csv").toAbsolutePath().normalize().toString();
+        String csvPath = SentimentValues.class.getResource("sentimentwords.csv").getPath();
+        //String csvPath = Paths.get("sentimentwords.csv").toAbsolutePath().normalize().toString();
         StringBuilder sentimentWordsBuilder = new StringBuilder();
         //sentimentWordsBuilder.append("[");
         try ( BufferedReader br = new BufferedReader(new FileReader(csvPath)) ) {
