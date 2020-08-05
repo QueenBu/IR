@@ -23,7 +23,7 @@ public class Manager {
     private String indexPath = "\\index";
     private Searcher searcher;
 
-    public void start() {
+    public void start(String inputPath, String outputPath) {
         /*
         cli = new CLIHandler();
         while ( true ) {
@@ -41,12 +41,17 @@ public class Manager {
 
         }
        */
-        readTopics();
+        readTopics(inputPath);
         List<List<String>> test = searcher.getOutput();
         for(List<String> x: test){
             for(String y : x){
                 System.out.println(y);
             }
+        }
+        try {
+            makeOutput(outputPath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -74,9 +79,9 @@ public class Manager {
         searcher.searchAndExplain(searchQuery, topicNumber);
     }
 
-    private void readTopics(){
+    private void readTopics(String topicInputPath){
         try {
-            File inputFile = new File("/home/christopher/IdeaProjects/IR/ArgumentRetrievalSystem/corpus_files/topic.xml");
+            File inputFile = new File(topicInputPath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             org.w3c.dom.Document doc = dBuilder.parse(inputFile);
@@ -95,5 +100,18 @@ public class Manager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void makeOutput(String outputPath) throws IOException {
+        List<List<String>> result = searcher.getOutput();
+        File f = new File(outputPath + "/run.txt");
+        f.createNewFile();
+        FileOutputStream fos = new FileOutputStream(f);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        for(List<String> row: result){
+            bw.write(String.join(" ", row));
+            bw.newLine();
+        }
+        bw.close();
     }
 }

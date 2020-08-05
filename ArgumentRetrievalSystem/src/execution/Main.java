@@ -14,12 +14,16 @@ public class Main {
         HttpService hs = new HttpService();
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
+        /*
         if(args.length != 2){
-
+            System.out.println("Wrong input parameters. Pls try again");
+            System.exit(0);
         }
+
+         */
         Manager manager = new Manager();
         manager.makeIndex(getTestFile("parliamentary.json"));
-        manager.start();
+        manager.start(args[0], args[1]);
     }
 
 }
