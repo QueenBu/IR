@@ -14,6 +14,9 @@ public class Main {
         HttpService hs = new HttpService();
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
+        if(args.length != 2){
+
+        }
         Manager manager = new Manager();
         manager.makeIndex(getTestFile("parliamentary.json"));
         manager.start();

@@ -14,12 +14,26 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Searcher {
 
     IndexSearcher indexSearcher;
     QueryParser queryParser;
     Query query;
+    List<List<String>> output;
+
+    public static void main(String[] args0){
+
+        try {
+            Searcher s = new Searcher("\\index");
+            System.out.println(s.output.get(0).get(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Searcher(String indexPath) throws IOException {
 
@@ -29,6 +43,8 @@ public class Searcher {
         indexSearcher.setSimilarity(new TFIDFSimilarity());
         //indexSearcher.setSimilarity(new ClassicSimilarity());
         queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
+        output = new ArrayList<>();
+        output.add(new ArrayList<>(Arrays.asList("topic_number", "Q0", "arg_ids", "rank", "score", "method")));
 
     }
 
@@ -42,16 +58,20 @@ public class Searcher {
         return indexSearcher.doc(scoreDoc.doc);
     }
 
-    public void searchAndExplain(String searchQuery) throws ParseException, IOException {
+    public void searchAndExplain(String searchQuery, int topicNumber) throws ParseException, IOException {
         TopDocs hits = search(searchQuery);
 
         for ( int i = 0; i < hits.totalHits.value && i < hits.scoreDocs.length; i++ ) {
             final ScoreDoc scoreDoc = hits.scoreDocs[ i ];
-            System.out.println(getDocument(scoreDoc));
-
-            System.out.println(indexSearcher.explain(query, scoreDoc.doc) + "\n\n\n");
+            output.add(new ArrayList<>(Arrays.asList(Integer.toString(topicNumber), "Q0", getDocument(scoreDoc).get("id"), Integer.toString(i), Float.toString(scoreDoc.score), "method")));
+            //System.out.println(getDocument(scoreDoc));
+            //System.out.println(indexSearcher.explain(query, scoreDoc.doc) + "\n\n\n");
 
         }
 
+    }
+
+    public List<List<String>> getOutput() {
+        return output;
     }
 }
