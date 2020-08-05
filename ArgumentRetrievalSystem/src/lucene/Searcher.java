@@ -63,7 +63,7 @@ public class Searcher {
 
         for ( int i = 0; i < hits.totalHits.value && i < hits.scoreDocs.length; i++ ) {
             final ScoreDoc scoreDoc = hits.scoreDocs[ i ];
-            output.add(new ArrayList<>(Arrays.asList(Integer.toString(topicNumber), "Q0", getDocument(scoreDoc).get("id"), Integer.toString(i), Float.toString(scoreDoc.score), "method")));
+            output.add(new ArrayList<>(Arrays.asList(Integer.toString(topicNumber), "Q0", getDocument(scoreDoc).get(LuceneConstants.ID), Integer.toString(i), Float.toString(scoreDoc.score), "method")));
             //System.out.println(getDocument(scoreDoc));
             //System.out.println(indexSearcher.explain(query, scoreDoc.doc) + "\n\n\n");
 

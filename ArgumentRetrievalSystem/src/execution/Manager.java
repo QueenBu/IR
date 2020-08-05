@@ -1,6 +1,5 @@
 package execution;
 
-import jdk.internal.org.xml.sax.SAXException;
 import lucene.Indexer;
 import lucene.LuceneConstants;
 import lucene.Searcher;
@@ -18,12 +17,15 @@ import java.io.*;
 import java.io.IOException;
 import java.util.List;
 
+import static execution.Main.inputDirectory;
+import static execution.Main.outputDirectory;
+
 public class Manager {
     private CLIHandler cli;
     private String indexPath = "\\index";
     private Searcher searcher;
 
-    public void start(String inputPath, String outputPath) {
+    public void start() {
         /*
         cli = new CLIHandler();
         while ( true ) {
@@ -41,7 +43,7 @@ public class Manager {
 
         }
        */
-        readTopics(inputPath);
+        readTopics();
         List<List<String>> test = searcher.getOutput();
         for(List<String> x: test){
             for(String y : x){
@@ -49,14 +51,14 @@ public class Manager {
             }
         }
         try {
-            makeOutput(outputPath);
+            makeOutput();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void makeIndex(String filepath) {
-        Indexer indexer = new Indexer(indexPath, filepath);
+    public void makeIndex() throws IOException {
+        Indexer indexer = new Indexer(indexPath);
         indexer.createIndex();
         try {
             searcher = new Searcher(indexPath);
@@ -79,9 +81,9 @@ public class Manager {
         searcher.searchAndExplain(searchQuery, topicNumber);
     }
 
-    private void readTopics(String topicInputPath){
+    private void readTopics(){
         try {
-            File inputFile = new File(topicInputPath);
+            File inputFile = new File(inputDirectory + "topic.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             org.w3c.dom.Document doc = dBuilder.parse(inputFile);
@@ -102,9 +104,9 @@ public class Manager {
         }
     }
 
-    private void makeOutput(String outputPath) throws IOException {
+    private void makeOutput() throws IOException {
         List<List<String>> result = searcher.getOutput();
-        File f = new File(outputPath + "/run.txt");
+        File f = new File(outputDirectory + "/run.txt");
         f.createNewFile();
         FileOutputStream fos = new FileOutputStream(f);
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));

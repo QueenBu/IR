@@ -7,16 +7,17 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import tools.ArgumentsIterator;
 import tools.JSONDocument;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static execution.Main.getTestFile;
+import static execution.Main.inputDirectory;
 import static tools.SentimentValues.relativeSentiment;
 
 /*import org.jdom2.Element;
@@ -27,17 +28,18 @@ import org.jdom2.output.XMLOutputter;*/
 public class Indexer {
 
     private IndexWriter writer;
-    private String indexPath;
-    private String jsonPath;
+    private final String indexPath;
 
-    public Indexer(String indexDirectoryPath, String jsonPath) {
+    public Indexer(String indexDirectoryPath) {
         this.indexPath = indexDirectoryPath;
-        this.jsonPath = jsonPath;
     }
 
-    public void createIndex() {
+    public void createIndex() throws IOException {
         openIndex();
-        addDocuments();
+        Files.walk(Paths.get(inputDirectory), 1).filter(Files::isRegularFile).map(Path::toString).filter(f -> f.endsWith(".json")).forEach(filename ->{
+            System.out.println(filename);
+            addDocuments(filename);
+        });
         finish();
     }
 
@@ -57,8 +59,8 @@ public class Indexer {
         }
     }
 
-    public void addDocuments() {
-        try ( ArgumentsIterator ai = new ArgumentsIterator(getTestFile("parliamentary.json")) ) {
+    public void addDocuments(String filename) {
+        try ( ArgumentsIterator ai = new ArgumentsIterator(filename) ) {
             while ( ai.hasNext() ) {
                 JSONDocument jsonDoc = ai.next();
                 for ( int i = 0; i < jsonDoc.getPremisesCount(); i++ ) {
@@ -75,10 +77,14 @@ public class Indexer {
                     );
 
                     document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
-                    document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),
-                            TextField.Store.YES));
-                    document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
-                    document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+                    //document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),
+                    //        TextField.Store.YES));
+                    if ( jsonDoc.getTopic() != null ) {
+                        document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
+                    }
+                    if ( jsonDoc.getAutName() != null ) {
+                        document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
+                    }
 
                     //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
                     //findTopic(jsonDoc.getPremText().get(0));

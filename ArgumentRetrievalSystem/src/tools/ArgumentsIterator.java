@@ -26,8 +26,10 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
     public ArgumentsIterator(String jsonPath) throws IOException {
         reader = new JsonReader(new InputStreamReader(new FileInputStream(jsonPath)));
         reader.beginObject();
-        reader.skipValue(); // or: reader.nextName()->"arguments"
-        reader.beginArray();
+        if ( reader.nextName().equals("arguments") ) {
+            //reader.skipValue(); // or: reader.nextName()->"arguments"
+            reader.beginArray();
+        }
     }
 
     /**

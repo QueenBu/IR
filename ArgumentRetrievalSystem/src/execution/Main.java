@@ -1,10 +1,11 @@
 package execution;
 
+import java.io.IOException;
+
 public class Main {
 
-    public static String getTestFile(String filename) {
-        return "ArgumentRetrievalSystem/corpus_files/" + filename;
-    }
+    public static String inputDirectory;
+    public static String outputDirectory;
 
     /**
      * @param args the command line arguments
@@ -14,16 +15,20 @@ public class Main {
         HttpService hs = new HttpService();
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
          */
-        /*
-        if(args.length != 2){
-            System.out.println("Wrong input parameters. Pls try again");
-            System.exit(0);
+        if ( args.length == 2 ) {
+            inputDirectory = args[ 0 ];
+            outputDirectory = args[ 1 ];
+        } else {
+            inputDirectory = "ArgumentRetrievalSystem/corpus_files/";
+            outputDirectory = "ArgumentRetrievalSystem/output_files/";
         }
-
-         */
-        Manager manager = new Manager();
-        manager.makeIndex(getTestFile("parliamentary.json"));
-        manager.start(args[0], args[1]);
+        try {
+            Manager manager = new Manager();
+            manager.makeIndex();
+            manager.start();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
     }
 
 }
