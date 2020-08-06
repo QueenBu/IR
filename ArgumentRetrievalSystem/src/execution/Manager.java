@@ -83,7 +83,7 @@ public class Manager {
 
     private void readTopics(){
         try {
-            File inputFile = new File(inputDirectory + "topic.xml");
+            File inputFile = Paths.get(inputDirectory, "topics.xml").toFile();
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             org.w3c.dom.Document doc = dBuilder.parse(inputFile);
