@@ -1,10 +1,7 @@
 package lucene;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleDocValuesField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -36,7 +33,7 @@ public class Indexer {
 
     public void createIndex() throws IOException {
         openIndex();
-        Files.walk(Paths.get(inputDirectory), 1).filter(Files::isRegularFile).map(Path::toString).filter(f -> f.endsWith(".json")).forEach(filename ->{
+        Files.walk(Paths.get(inputDirectory), 1).filter(Files::isRegularFile).map(Path::toString).filter(f -> f.endsWith(".json")).forEach(filename -> {
             System.out.println(filename);
             addDocuments(filename);
         });
@@ -63,37 +60,36 @@ public class Indexer {
         try ( ArgumentsIterator ai = new ArgumentsIterator(filename) ) {
             while ( ai.hasNext() ) {
                 JSONDocument jsonDoc = ai.next();
-                for ( int i = 0; i < jsonDoc.getPremisesCount(); i++ ) {
-                    Document document = new Document();
+                Document document = new Document();
 
-                    document.add(new TextField(LuceneConstants.CONTENTS, jsonDoc.getPremTexts().get(i),
-                            TextField.Store.YES)
-                    );
-                    document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStances().get(i),
-                            TextField.Store.YES)
-                    );
-                    document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
-                            relativeSentiment(jsonDoc.getPremTexts().get(i)))
-                    );
+                document.add(new TextField(LuceneConstants.PREMISES,
+                        jsonDoc.getPremTexts().stream().reduce(String::concat).orElse(""), Field.Store.YES));
 
-                    document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), TextField.Store.YES));
-                    //document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(),
-                    //        TextField.Store.YES));
-                    if ( jsonDoc.getTopic() != null ) {
-                        document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
-                    }
-                    if ( jsonDoc.getAutName() != null ) {
-                        document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField.Store.YES));
-                    }
+                /*document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStances().get(i),
+                        TextField.Store.YES)
+                );*/
 
-                    //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
-                    //findTopic(jsonDoc.getPremText().get(0));
-                    try {
-                        writer.addDocument(document);
-                    } catch ( IOException ex ) {
-                        System.err.println("There is an IndexError");
-                        ex.printStackTrace();
-                    }
+                document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
+                        relativeSentiment(jsonDoc.getSearchableText()))
+                );
+
+                document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), StringField.Store.YES));
+                document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
+                if ( jsonDoc.getTopic() != null ) {
+                    document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
+                }
+                if ( jsonDoc.getAutName() != null ) {
+                    document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField
+                            .Store.YES));
+                }
+
+                //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
+                //findTopic(jsonDoc.getPremText().get(0));
+                try {
+                    writer.addDocument(document);
+                } catch ( IOException ex ) {
+                    System.err.println("There is an IndexError");
+                    ex.printStackTrace();
                 }
             }
         } catch ( IOException e ) {

@@ -1,8 +1,8 @@
 package tools;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -15,11 +15,11 @@ public class SentimentValues {
     }
 
     public static void createRegEx() {
-        String csvPath = SentimentValues.class.getResource("sentimentwords.csv").getPath();
         //String csvPath = Paths.get("sentimentwords.csv").toAbsolutePath().normalize().toString();
         StringBuilder sentimentWordsBuilder = new StringBuilder();
         //sentimentWordsBuilder.append("[");
-        try ( BufferedReader br = new BufferedReader(new FileReader(csvPath)) ) {
+        try ( BufferedReader br = new BufferedReader(new InputStreamReader(SentimentValues.class.getResource(
+                "sentimentwords.csv").openStream())) ) {
             br.lines().forEach((line) ->
                     sentimentWordsBuilder
                             .append(line.split(";")[ 0 ].replaceAll("\\*", ".*"))

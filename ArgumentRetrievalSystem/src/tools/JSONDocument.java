@@ -38,6 +38,10 @@ public class JSONDocument {
         return conclusion;
     }
 
+    public String getPremise(int i) {
+        return premTexts.get(i);
+    }
+
     public ArrayList<String> getPremTexts() {
         return premTexts;
     }
@@ -100,6 +104,12 @@ public class JSONDocument {
 
     public void setSourceInfo(HashMap<String, Object> sourceInfo) {
         this.sourceInfo = sourceInfo;
+    }
+
+    public String getSearchableText() {
+        StringBuilder sb = new StringBuilder(conclusion);
+        premTexts.forEach(sb::append);
+        return sb.toString();
     }
 
     @Override
