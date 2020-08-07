@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import tools.ArgumentsIterator;
@@ -58,6 +59,7 @@ public class Indexer {
 
     public void addDocuments(String filename) {
         try ( ArgumentsIterator ai = new ArgumentsIterator(filename) ) {
+            //List<String> ids = new ArrayList<>();
             while ( ai.hasNext() ) {
                 JSONDocument jsonDoc = ai.next();
                 Document document = new Document();
@@ -72,7 +74,7 @@ public class Indexer {
                 document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
                         relativeSentiment(jsonDoc.getSearchableText()))
                 );
-
+                //ids.add(jsonDoc.getId());
                 document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), StringField.Store.YES));
                 document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
                 if ( jsonDoc.getTopic() != null ) {
@@ -86,12 +88,16 @@ public class Indexer {
                 //System.out.println(jsonDoc.getTopic() + " <-> " + findTopic(jsonDoc.getPremText().get(0)));
                 //findTopic(jsonDoc.getPremText().get(0));
                 try {
-                    writer.addDocument(document);
+                    writer.updateDocument(new Term(LuceneConstants.ID, jsonDoc.getId()), document);
+                    //writer.addDocument(document);
                 } catch ( IOException ex ) {
                     System.err.println("There is an IndexError");
                     ex.printStackTrace();
                 }
             }
+            /*Set<String> lel = new HashSet<>();
+            Set<String> duplicates = ids.stream().filter(n -> !lel.add(n)).collect(Collectors.toSet());
+            duplicates.forEach(System.out::println);*/
         } catch ( IOException e ) {
             e.printStackTrace();
         }
