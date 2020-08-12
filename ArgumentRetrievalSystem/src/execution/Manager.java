@@ -70,7 +70,7 @@ public class Manager {
         System.out.println(hits.totalHits + " documents found.");
         for ( ScoreDoc scoreDoc : hits.scoreDocs ) {
             Document doc = searcher.getDocument(scoreDoc);
-            System.out.println("Text: " + doc.get(LuceneConstants.CONCLUSION));
+            System.out.println("Text: " + doc.get(LuceneConstants.CONCLUSION) + "\nPremises: " + doc.get(LuceneConstants.PREMISES));
         }
 
     }
