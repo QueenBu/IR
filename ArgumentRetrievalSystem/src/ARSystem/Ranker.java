@@ -3,6 +3,7 @@ package ARSystem;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class Ranker {
     /**
      * ranks the dokuments by score, for now something very basic
