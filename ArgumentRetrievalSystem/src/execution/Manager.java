@@ -27,23 +27,6 @@ public class Manager {
     private Searcher searcher;
 
     public void start() {
-        /*
-        cli = new CLIHandler();
-        while ( true ) {
-            String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
-            if ( query.isEmpty() ) {
-                break;
-            }
-            try {
-                //readTopics();
-                search(query);
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-
-
-        }
-       */
         readTopics();
         List<String> test = searcher.getOutput();
         for ( String y : test ) {
@@ -54,6 +37,21 @@ public class Manager {
             makeOutput();
         } catch ( IOException e ) {
             e.printStackTrace();
+        }
+    }
+
+    public void oldStart() {
+        cli = new CLIHandler();
+        while ( true ) {
+            String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
+            if ( query.isEmpty() ) {
+                break;
+            }
+            try {
+                search(query);
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -72,7 +70,7 @@ public class Manager {
         System.out.println(hits.totalHits + " documents found.");
         for ( ScoreDoc scoreDoc : hits.scoreDocs ) {
             Document doc = searcher.getDocument(scoreDoc);
-            System.out.println("Text: " + doc.get(LuceneConstants.CONCLUSION) + "\n Stance: " + doc.get(LuceneConstants.STANCE));
+            System.out.println("Text: " + doc.get(LuceneConstants.CONCLUSION));
         }
 
     }
