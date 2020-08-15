@@ -34,15 +34,16 @@ public class SentimentValues {
     }
 
     private static int absoluteSentiment(String[] docTerms) {
-        // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
         return Arrays.stream(docTerms).mapToInt((docWord) ->
                 sentimentWordsPattern.matcher(docWord).matches() ? 1 : 0
         ).sum();
     }
 
     public static double relativeSentiment(String docTerm) {
+        // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
         String[] docTerms = docTerm.split("\\W+");
         return (double) absoluteSentiment(docTerms) / docTerms.length;
+        //return 1;
     }
 
 }

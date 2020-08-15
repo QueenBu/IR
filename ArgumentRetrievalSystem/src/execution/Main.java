@@ -1,6 +1,10 @@
 package execution;
 
+import tools.CLIHandler;
+
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main {
 
@@ -10,7 +14,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException {
         /*
         HttpService hs = new HttpService();
         Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
@@ -19,7 +23,11 @@ public class Main {
             inputDirectory = args[ 0 ];
             outputDirectory = args[ 1 ];
         } else {
-            inputDirectory = "ArgumentRetrievalSystem/corpus_files/";
+            CLIHandler cli = new CLIHandler();
+            String input = cli.readUserInput("for execution via jar enter something, empty for execution via IDE");
+            inputDirectory = !input.equals("") ?
+                    new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toString() :
+                    "ArgumentRetrievalSystem/corpus_files/";
             outputDirectory = "ArgumentRetrievalSystem/output_files/";
         }
         try {

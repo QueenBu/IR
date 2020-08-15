@@ -71,7 +71,8 @@ public class Indexer {
                 document.add(new DoubleDocValuesField(
                         LuceneConstants.LENGTH_FACTOR,
                         // magic numbers are explained in the evaluation
-                        10. / (1 + 30 * Math.pow(Math.E, -0.1 * searchableString.split("\\W+").length))
+                        //10. / (1 + 30 * Math.pow(Math.E, -0.1 * searchableString.split("\\W+").length))
+                        Math.max(Math.log(searchableString.split("\\W+").length - 8), 1)
                         //Math.log(searchableString.split("\\W+").length)
                 ));
 

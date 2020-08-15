@@ -69,7 +69,7 @@ public class Searcher {
 
         for ( int i = 0; i < hits.totalHits.value && i < hits.scoreDocs.length; i++ ) {
             final ScoreDoc scoreDoc = hits.scoreDocs[ i ];
-            output.add(topicNumber + " Q0 " + getDocument(scoreDoc).get(LuceneConstants.ID) + " " + i + " " + scoreDoc.score + " sentiment+tf/idf+doc_length");
+            output.add(topicNumber + " Q0 " + getDocument(scoreDoc).get(LuceneConstants.ID) + " " + i + " " + scoreDoc.score + " tf/idf+doc_length_ln");
             //System.out.println(getDocument(scoreDoc));
             //System.out.println(indexSearcher.explain(query, scoreDoc.doc) + "\n\n\n");
 
