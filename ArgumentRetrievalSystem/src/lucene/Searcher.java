@@ -7,7 +7,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -41,7 +40,8 @@ public class Searcher {
         indexSearcher.setSimilarity(new TFIDFSimilarity());
         //indexSearcher.setSimilarity(new ClassicSimilarity());
 
-        qp2 = new MultiFieldQueryParser(new String[]{LuceneConstants.CONCLUSION, LuceneConstants.PREMISES}, new StandardAnalyzer());
+        qp2 = new MultiFieldQueryParser(new String[]{ LuceneConstants.CONCLUSION, LuceneConstants.PREMISES },
+                new StandardAnalyzer());
 
         output = new ArrayList<>();
         output.add("topic_number Q0 arg_ids rank score method");
@@ -49,8 +49,14 @@ public class Searcher {
     }
 
     public TopDocs search(String searchQuery) throws ParseException, IOException {
-        Query query = FunctionScoreQuery.boostByValue(qp2.parse(searchQuery),
-                DoubleValuesSource.fromDoubleField(LuceneConstants.SENTIMENT));
+        Query query =
+                FunctionScoreQuery.boostByValue(
+                        FunctionScoreQuery.boostByValue(
+                                qp2.parse(searchQuery),
+                                DoubleValuesSource.fromDoubleField(LuceneConstants.SENTIMENT)
+                        ),
+                        DoubleValuesSource.fromDoubleField(LuceneConstants.LENGTH_FACTOR)
+                );
         return indexSearcher.search(query, LuceneConstants.MAX_SEARCH);
     }
 
@@ -63,7 +69,7 @@ public class Searcher {
 
         for ( int i = 0; i < hits.totalHits.value && i < hits.scoreDocs.length; i++ ) {
             final ScoreDoc scoreDoc = hits.scoreDocs[ i ];
-            output.add(topicNumber + " Q0 " + getDocument(scoreDoc).get(LuceneConstants.ID) + " " + i + " " + scoreDoc.score + " sentiment+tf/idf");
+            output.add(topicNumber + " Q0 " + getDocument(scoreDoc).get(LuceneConstants.ID) + " " + i + " " + scoreDoc.score + " sentiment+tf/idf+doc_length");
             //System.out.println(getDocument(scoreDoc));
             //System.out.println(indexSearcher.explain(query, scoreDoc.doc) + "\n\n\n");
 

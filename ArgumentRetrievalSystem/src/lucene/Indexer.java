@@ -64,8 +64,16 @@ public class Indexer {
                 JSONDocument jsonDoc = ai.next();
                 Document document = new Document();
 
-                document.add(new TextField(LuceneConstants.PREMISES,
-                        jsonDoc.getPremTexts().stream().reduce(String::concat).orElse(""), Field.Store.YES));
+                String searchableString = jsonDoc.getPremTexts().stream().reduce(String::concat).orElse("");
+
+                document.add(new TextField(LuceneConstants.PREMISES, searchableString, Field.Store.YES));
+
+                document.add(new DoubleDocValuesField(
+                        LuceneConstants.LENGTH_FACTOR,
+                        // magic numbers are explained in the evaluation
+                        10. / (1 + 30 * Math.pow(Math.E, -0.1 * searchableString.split("\\W+").length))
+                        //Math.log(searchableString.split("\\W+").length)
+                ));
 
                 /*document.add(new StringField(LuceneConstants.STANCE, jsonDoc.getPremStances().get(i),
                         TextField.Store.YES)
