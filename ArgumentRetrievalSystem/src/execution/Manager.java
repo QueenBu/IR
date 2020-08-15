@@ -68,9 +68,10 @@ public class Manager {
     private void search(String searchQuery) throws IOException, ParseException {
         TopDocs hits = searcher.search(searchQuery);
         System.out.println(hits.totalHits + " documents found.");
-        for ( ScoreDoc scoreDoc : hits.scoreDocs ) {
-            Document doc = searcher.getDocument(scoreDoc);
-            System.out.println("Text: " + doc.get(LuceneConstants.CONCLUSION) + "\nPremises: " + doc.get(LuceneConstants.PREMISES));
+        ScoreDoc[] scoreDocs = hits.scoreDocs;
+        for ( int i = 0; i < scoreDocs.length; i++ ) {
+            Document doc = searcher.getDocument(scoreDocs[ i ]);
+            System.out.println(i + 1 + ".\nText: " + doc.get(LuceneConstants.CONCLUSION) + "\nPremises: " + doc.get(LuceneConstants.PREMISES) + "\n");
         }
 
     }
