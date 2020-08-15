@@ -33,19 +33,16 @@ public class SentimentValues {
         }
     }
 
-    private static int absoluteSentiment(String docTerm) {
+    private static int absoluteSentiment(String[] docTerms) {
         // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
-        return Arrays.stream(docTerm.split("\\W+")).mapToInt((docWord) ->
+        return Arrays.stream(docTerms).mapToInt((docWord) ->
                 sentimentWordsPattern.matcher(docWord).matches() ? 1 : 0
         ).sum();
     }
 
-    private static int termCount(String docTerm) {
-        return docTerm.split("\\W+").length;
-    }
-
     public static double relativeSentiment(String docTerm) {
-        return (double) absoluteSentiment(docTerm) / termCount(docTerm);
+        String[] docTerms = docTerm.split("\\W+");
+        return (double) absoluteSentiment(docTerms) / docTerms.length;
     }
 
 }
