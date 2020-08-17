@@ -1,8 +1,5 @@
 package execution;
 
-import tools.CLIHandler;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -23,11 +20,7 @@ public class Main {
             inputDirectory = args[ 0 ];
             outputDirectory = args[ 1 ];
         } else {
-            CLIHandler cli = new CLIHandler();
-            String input = cli.readUserInput("for execution via jar enter something, empty for execution via IDE");
-            inputDirectory = !input.equals("") ?
-                    new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParent() :
-                    "ArgumentRetrievalSystem/corpus_files/";
+            inputDirectory = "ArgumentRetrievalSystem/corpus_files/";
             outputDirectory = "ArgumentRetrievalSystem/output_files/";
         }
         try {
