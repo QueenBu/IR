@@ -5,7 +5,6 @@ import lucene.LuceneConstants;
 import lucene.Searcher;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -79,7 +78,7 @@ public class Manager {
         searcher.searchAndWriteToOutput(searchQuery, topicNumber);
     }
 
-    private void readTopics() {
+    public void readTopics() {
         try {
             File inputFile = Paths.get(inputDirectory, "topics.xml").toFile();
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -92,8 +91,8 @@ public class Manager {
                 Node nNode = nList.item(i);
                 if ( nNode.getNodeType() == Node.ELEMENT_NODE ) {
                     Element eElement = (Element) nNode;
-                    searchAndWriteToOutput(eElement.getElementsByTagName("title").item(0).getTextContent(),
-                            Integer.parseInt(eElement.getElementsByTagName("num").item(0).getTextContent()));
+                    System.out.println("\n\n\nTopic " + eElement.getElementsByTagName("num").item(0).getTextContent());
+                    search(eElement.getElementsByTagName("title").item(0).getTextContent());
                     //System.out.println("title : "+ eElement.getElementsByTagName("title").item(0).getTextContent());
                     //System.out.println("number : " + eElement.getElementsByTagName("num").item(0).getTextContent());
                 }
