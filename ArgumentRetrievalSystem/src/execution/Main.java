@@ -33,7 +33,7 @@ public class Main {
         try {
             Manager manager = new Manager();
             manager.makeIndex();
-            manager.start();
+            manager.oldStart();
         } catch ( IOException e ) {
             e.printStackTrace();
         }
