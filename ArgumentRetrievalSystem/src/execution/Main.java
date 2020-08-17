@@ -26,7 +26,7 @@ public class Main {
             CLIHandler cli = new CLIHandler();
             String input = cli.readUserInput("for execution via jar enter something, empty for execution via IDE");
             inputDirectory = !input.equals("") ?
-                    new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).toString() :
+                    new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParent() :
                     "ArgumentRetrievalSystem/corpus_files/";
             outputDirectory = "ArgumentRetrievalSystem/output_files/";
         }
