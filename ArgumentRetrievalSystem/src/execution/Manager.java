@@ -91,7 +91,7 @@ public class Manager {
                 Node nNode = nList.item(i);
                 if ( nNode.getNodeType() == Node.ELEMENT_NODE ) {
                     Element eElement = (Element) nNode;
-                    System.out.println("\n\n\nTopic " + eElement.getElementsByTagName("num").item(0).getTextContent());
+                    System.out.println("\n\n\nTopic " + eElement.getElementsByTagName("number").item(0).getTextContent());
                     search(eElement.getElementsByTagName("title").item(0).getTextContent());
                     //System.out.println("title : "+ eElement.getElementsByTagName("title").item(0).getTextContent());
                     //System.out.println("number : " + eElement.getElementsByTagName("num").item(0).getTextContent());
