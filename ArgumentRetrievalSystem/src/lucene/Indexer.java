@@ -36,7 +36,7 @@ public class Indexer {
         finish();
     }
 
-    public void openIndex() {
+    private void openIndex() {
         try {
             Directory indexDirectory = FSDirectory.open(Paths.get(INDEX_PATH));
             StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -52,7 +52,7 @@ public class Indexer {
         }
     }
 
-    public void addDocuments(String filename) {
+    private void addDocuments(String filename) {
         try ( ArgumentsIterator ai = new ArgumentsIterator(filename) ) {
             while ( ai.hasNext() ) {
                 JSONDocument jsonDoc = ai.next();
@@ -96,7 +96,7 @@ public class Indexer {
         }
     }
 
-    public void finish() {
+    private void finish() {
         try {
             writer.commit();
             writer.close();

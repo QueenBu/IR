@@ -19,18 +19,15 @@ import static lucene.LuceneConstants.INDEX_PATH;
 public class Searcher {
 
     IndexSearcher indexSearcher;
+    /**
+     * Parses search Strings to queries which search in {@link LuceneConstants#CONCLUSION} and
+     * {@link LuceneConstants#PREMISES}
+     */
     MultiFieldQueryParser qp2;
+    /**
+     * collects the tira compatible output lines in a list
+     */
     List<String> output;
-
-    public static void main(String[] args0) {
-
-        try {
-            Searcher s = new Searcher();
-            System.out.println(s.output.get(0));
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-    }
 
     public Searcher() throws IOException {
 
@@ -48,13 +45,24 @@ public class Searcher {
 
     }
 
+    /**
+     * standard searching function
+     *
+     * @param searchQuery to be searched for
+     * @return an object containing the search results
+     * @throws ParseException if the query failed to parse
+     * @throws IOException if the index files couldnt be searched
+     */
     public TopDocs search(String searchQuery) throws ParseException, IOException {
         Query query =
                 FunctionScoreQuery.boostByValue(
                         FunctionScoreQuery.boostByValue(
+                                // standard query parsing
                                 qp2.parse(searchQuery),
+                                // boosting by sentiment value
                                 DoubleValuesSource.fromDoubleField(LuceneConstants.SENTIMENT)
                         ),
+                        // boosting by length factor
                         DoubleValuesSource.fromDoubleField(LuceneConstants.LENGTH_FACTOR)
                 );
         return indexSearcher.search(query, LuceneConstants.MAX_SEARCH);
@@ -64,6 +72,13 @@ public class Searcher {
         return indexSearcher.doc(scoreDoc.doc);
     }
 
+    /**
+     * tira compatible search output
+     * @param searchQuery to be searched for
+     * @param topicNumber in the given topics.xml
+     * @throws ParseException if thrown in {@link Searcher#search(String searchQuery)}
+     * @throws IOException if thrown in {@link Searcher#search(String searchQuery)}
+     */
     public void searchAndAddToOutput(String searchQuery, String topicNumber) throws ParseException, IOException {
         TopDocs hits = search(searchQuery);
 

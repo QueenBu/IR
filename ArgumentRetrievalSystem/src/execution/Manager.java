@@ -19,11 +19,37 @@ import java.util.List;
 import static execution.Main.inputDirectory;
 import static execution.Main.outputDirectory;
 
+/**
+ * initializing, starting, running, closing of the Indexer and Searcher and general program flow.
+ */
 public class Manager {
+    /**
+     * interface to realise searching and handling results
+     */
     private Searcher searcher;
 
+    /**
+     * indexes the given files
+     *
+     * @throws IOException if writing the index fails.
+     */
+    public void makeIndex() throws IOException {
+        Indexer indexer = new Indexer();
+        indexer.createIndex();
+        try {
+            searcher = new Searcher();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * standard start method.<p>
+     *
+     * tira compatible output
+     */
     public void start() {
-        readTopics();
+        searchTopics();
         List<String> output = searcher.getOutput();
         for ( String trec_line : output ) {
             System.out.println(trec_line);
@@ -36,6 +62,9 @@ public class Manager {
         }
     }
 
+    /**
+     * program flow for debugging and testing, human readable output
+     */
     public void oldStart() {
         CLIHandler cli = new CLIHandler();
         while ( true ) {
@@ -51,16 +80,13 @@ public class Manager {
         }
     }
 
-    public void makeIndex() throws IOException {
-        Indexer indexer = new Indexer();
-        indexer.createIndex();
-        try {
-            searcher = new Searcher();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * searches for the given query and prints the results on screen.
+     *
+     * @param searchQuery to be searched for
+     * @throws IOException if {@link Searcher#search(String searchQuery)} throws it
+     * @throws ParseException if {@link Searcher#search(String searchQuery)} throws it
+     */
     private void search(String searchQuery) throws IOException, ParseException {
         TopDocs hits = searcher.search(searchQuery);
         System.out.println(hits.totalHits + " documents found.");
@@ -71,7 +97,10 @@ public class Manager {
 
     }
 
-    private void readTopics() {
+    /**
+     * Sequentially searches for the topics given in topics.xml
+     */
+    private void searchTopics() {
         try {
             File inputFile = Paths.get(inputDirectory, "topics.xml").toFile();
             org.w3c.dom.Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputFile);
@@ -95,6 +124,10 @@ public class Manager {
         }
     }
 
+    /**
+     * writes the output read by {@link Manager#searchTopics()} to run.txt
+     * @throws IOException if the file couldnt be written.
+     */
     private void writeOutput() throws IOException {
         List<String> result = searcher.getOutput();
         File f = Paths.get(outputDirectory, "run.txt").toFile();
