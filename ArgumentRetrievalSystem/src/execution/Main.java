@@ -1,7 +1,6 @@
 package execution;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class Main {
 
@@ -11,11 +10,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws URISyntaxException {
-        /*
-        HttpService hs = new HttpService();
-        Ranker.rank(hs.getArguments("cookies")).forEach(System.out::println);
-         */
+    public static void main(String[] args) {
         if ( args.length == 2 ) {
             inputDirectory = args[ 0 ];
             outputDirectory = args[ 1 ];

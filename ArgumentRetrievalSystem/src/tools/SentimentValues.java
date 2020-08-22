@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 
 public class SentimentValues {
 
-    static Pattern sentimentWordsPattern;
+    private static Pattern sentimentWordsPattern;
 
     static {
         createRegEx();
     }
 
-    public static void createRegEx() {
+    private static void createRegEx() {
         //String csvPath = Paths.get("sentimentwords.csv").toAbsolutePath().normalize().toString();
         StringBuilder sentimentWordsBuilder = new StringBuilder();
         //sentimentWordsBuilder.append("[");
@@ -43,7 +43,6 @@ public class SentimentValues {
         // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
         String[] docTerms = docTerm.split("\\W+");
         return (double) absoluteSentiment(docTerms) / docTerms.length;
-        //return 1;
     }
 
 }

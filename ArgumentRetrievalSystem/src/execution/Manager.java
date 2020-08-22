@@ -5,14 +5,12 @@ import lucene.LuceneConstants;
 import lucene.Searcher;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tools.CLIHandler;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.nio.file.Paths;
@@ -22,26 +20,24 @@ import static execution.Main.inputDirectory;
 import static execution.Main.outputDirectory;
 
 public class Manager {
-    private CLIHandler cli;
-    private String indexPath = "index";
     private Searcher searcher;
 
     public void start() {
         readTopics();
-        List<String> test = searcher.getOutput();
-        for ( String y : test ) {
-            System.out.println(y);
+        List<String> output = searcher.getOutput();
+        for ( String trec_line : output ) {
+            System.out.println(trec_line);
         }
 
         try {
-            makeOutput();
+            writeOutput();
         } catch ( IOException e ) {
             e.printStackTrace();
         }
     }
 
     public void oldStart() {
-        cli = new CLIHandler();
+        CLIHandler cli = new CLIHandler();
         while ( true ) {
             String query = cli.readUserInput("Please enter the phrase to be searched for! (empty input to cancel)");
             if ( query.isEmpty() ) {
@@ -56,10 +52,10 @@ public class Manager {
     }
 
     public void makeIndex() throws IOException {
-        Indexer indexer = new Indexer(indexPath);
+        Indexer indexer = new Indexer();
         indexer.createIndex();
         try {
-            searcher = new Searcher(indexPath);
+            searcher = new Searcher();
         } catch ( IOException e ) {
             e.printStackTrace();
         }
@@ -75,16 +71,10 @@ public class Manager {
 
     }
 
-    private void searchAndWriteToOutput(String searchQuery, int topicNumber) throws IOException, ParseException {
-        searcher.searchAndWriteToOutput(searchQuery, topicNumber);
-    }
-
     private void readTopics() {
         try {
             File inputFile = Paths.get(inputDirectory, "topics.xml").toFile();
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            org.w3c.dom.Document doc = dBuilder.parse(inputFile);
+            org.w3c.dom.Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputFile);
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("topic");
 
@@ -92,8 +82,10 @@ public class Manager {
                 Node nNode = nList.item(i);
                 if ( nNode.getNodeType() == Node.ELEMENT_NODE ) {
                     Element eElement = (Element) nNode;
-                    searchAndWriteToOutput(eElement.getElementsByTagName("title").item(0).getTextContent(),
-                            Integer.parseInt(eElement.getElementsByTagName("num").item(0).getTextContent()));
+                    searcher.searchAndAddToOutput(
+                            eElement.getElementsByTagName("title").item(0).getTextContent(),
+                            eElement.getElementsByTagName("num").item(0).getTextContent()
+                    );
                     //System.out.println("title : "+ eElement.getElementsByTagName("title").item(0).getTextContent());
                     //System.out.println("number : " + eElement.getElementsByTagName("num").item(0).getTextContent());
                 }
@@ -103,9 +95,9 @@ public class Manager {
         }
     }
 
-    private void makeOutput() throws IOException {
+    private void writeOutput() throws IOException {
         List<String> result = searcher.getOutput();
-        File f = new File(outputDirectory + "/run.txt");
+        File f = Paths.get(outputDirectory, "run.txt").toFile();
         f.createNewFile();
         try ( FileOutputStream fos = new FileOutputStream(f);
               BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos)) ) {

@@ -83,7 +83,7 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
     }
 
     /**
-     * Method extracted for clean code. Is called in {@link ArgumentsIterator#next()} and writes the "premises"
+     * Is called in {@link ArgumentsIterator#next()} and writes the "premises"
      * information into the given jsonDocument.
      *
      * @param jsonDocument to write "premises" info into
@@ -99,7 +99,7 @@ public class ArgumentsIterator implements Iterator<JSONDocument>, AutoCloseable 
             jsonDocument.addPremText(reader.nextString());
 
             reader.skipValue(); // or: reader.nextName()->"stance"
-            jsonDocument.addPremStance(reader.nextString());
+            reader.skipValue(); //jsonDocument.addPremStance(reader.nextString()); would read the stance
 
             reader.skipValue(); // or: reader.nextName()->"annotations"
             readAnnotations(jsonDocument);
