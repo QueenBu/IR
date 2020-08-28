@@ -60,21 +60,9 @@ public class Indexer {
 
                 String searchableString = jsonDoc.getPremTexts().stream().reduce(String::concat).orElse("");
 
-                document.add(new TextField(LuceneConstants.PREMISES, searchableString, Field.Store.YES));
-
-                document.add(new DoubleDocValuesField(
-                        LuceneConstants.LENGTH_FACTOR,
-                        // magic numbers are explained in the evaluation
-                        //10. / (1 + 30 * Math.pow(Math.E, -0.1 * searchableString.split("\\W+").length))
-                        Math.max(Math.log(searchableString.split("\\W+").length - 8), 1)
-                        //Math.log(searchableString.split("\\W+").length)
-                ));
-
-                document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
-                        relativeSentiment(jsonDoc.getSearchableText()))
-                );
-
                 document.add(new StringField(LuceneConstants.ID, jsonDoc.getId(), StringField.Store.YES));
+
+                document.add(new TextField(LuceneConstants.PREMISES, searchableString, Field.Store.YES));
                 document.add(new TextField(LuceneConstants.CONCLUSION, jsonDoc.getConclusion(), TextField.Store.YES));
                 if ( jsonDoc.getTopic() != null ) {
                     document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
@@ -83,6 +71,17 @@ public class Indexer {
                     document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField
                             .Store.YES));
                 }
+
+                document.add(new DoubleDocValuesField(
+                        LuceneConstants.LENGTH_FACTOR,
+                        // magic numbers are explained in the evaluation
+                        Math.max(Math.log(searchableString.split("\\W+").length - 8), 1)
+                        //Math.log(searchableString.split("\\W+").length)
+                ));
+
+                document.add(new DoubleDocValuesField(LuceneConstants.SENTIMENT,
+                        relativeSentiment(jsonDoc.getSearchableText()))
+                );
 
                 try {
                     writer.updateDocument(new Term(LuceneConstants.ID, jsonDoc.getId()), document);
