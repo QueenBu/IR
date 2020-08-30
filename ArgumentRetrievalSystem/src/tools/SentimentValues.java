@@ -44,10 +44,8 @@ public class SentimentValues {
      * @param docTerms Inhalt des Dokuments
      * @return Anzahl der erkannten "sentiment words"
      */
-    private static int absoluteSentiment(String[] docTerms) {
-        return Arrays.stream(docTerms).mapToInt((docWord) ->
-                sentimentWordsPattern.matcher(docWord).matches() ? 1 : 0
-        ).sum();
+    private static long absoluteSentiment(String[] docTerms) {
+        return Arrays.stream(docTerms).parallel().filter((String docWord) -> sentimentWordsPattern.matcher(docWord).matches()).count();
     }
 
     /**
