@@ -6,7 +6,16 @@ public class Main {
 
     /**
      * must contain the .json files and the topics.xml which must be structured like this:<p>
-     * <topics><topic><num>[number]</num><title>[title]</title></topic></topics>
+     * {@code <topics>
+     *     <topic>
+     *         <num>
+     *             [number]
+     *         </num>
+     *         <title>
+     *             [title]
+     *         </title>
+     *     </topic>
+     * </topics>}
      */
     public static String inputDirectory;
 

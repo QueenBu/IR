@@ -27,6 +27,11 @@ public class Indexer {
     public Indexer() {
     }
 
+    /**
+     * whole indexing flow, opening, reading, closing
+     *
+     * @throws IOException if input files cannot be opened
+     */
     public void createIndex() throws IOException {
         openIndex();
         Files.walk(Paths.get(inputDirectory), 1).filter(Files::isRegularFile).map(Path::toString).filter(f -> f.endsWith(".json")).forEach(filename -> {
@@ -36,6 +41,9 @@ public class Indexer {
         finish();
     }
 
+    /**
+     * standard opening of lucene related indexing
+     */
     private void openIndex() {
         try {
             Directory indexDirectory = FSDirectory.open(Paths.get(INDEX_PATH));
@@ -52,6 +60,11 @@ public class Indexer {
         }
     }
 
+    /**
+     * adds every document contained in the specified .JSON file to the index via iterating {@link ArgumentsIterator}
+     *
+     * @param filename where the .JSON file is located.
+     */
     private void addDocuments(String filename) {
         try ( ArgumentsIterator ai = new ArgumentsIterator(filename) ) {
             while ( ai.hasNext() ) {
@@ -68,7 +81,7 @@ public class Indexer {
                     document.add(new TextField(LuceneConstants.TOPIC, jsonDoc.getTopic(), TextField.Store.YES));
                 }
                 if ( jsonDoc.getAutName() != null ) {
-                    document.add(new TextField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), TextField
+                    document.add(new StringField(LuceneConstants.AUTHORNAME, jsonDoc.getAutName(), StringField
                             .Store.YES));
                 }
 
@@ -95,6 +108,9 @@ public class Indexer {
         }
     }
 
+    /**
+     * standard closing lucene related indexing
+     */
     private void finish() {
         try {
             writer.commit();

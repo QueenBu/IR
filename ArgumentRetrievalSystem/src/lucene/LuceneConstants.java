@@ -1,7 +1,7 @@
 package lucene;
 
 public class LuceneConstants {
-    public static final String PREMISES = "contents";
+    public static final String PREMISES = "premises";
     public static final int MAX_SEARCH = 1000;
     public static final String ID = "id";
     public static final String CONCLUSION = "conclusion";

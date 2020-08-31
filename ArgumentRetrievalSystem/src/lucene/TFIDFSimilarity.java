@@ -61,12 +61,12 @@ public class TFIDFSimilarity extends Similarity {
     /**
      * wie wichtig ist eine Menge an Termen fuer ein Dokument
      *
-     * @param boost           variabler Faktor um Wert eines Dokuments zu steigern
+     * @param boost           variabler Faktor um Gewicht eines Suchterms zu steigern
      * @param collectionStats Informationen über alle Dokumente in der Sammlung
-     * @param termStats       Menge von: Informationen zu einem Term bezüglich ALLER Dokumente
+     * @param termStats       Menge von Informationen zu jeweils einem Suchterm bezüglich ALLER Dokumente
      * @return SimScorer, welcher dann (intern) nur noch die Häufigkeit des Terms in EINEM Dokument und den über
      * {@link TFIDFSimilarity#computeNorm} berechneten Normwert erhält und dann einen Score für ein Dokument zu
-     * der Suchanfrage (Menge an Termen) gibt
+     * der Suchanfrage (Menge an Termen) gibt. Im Grunde ist es ein {@link TFIDFSimilarity.TFIDFSimScorer} pro Suchterm.
      */
     @Override
     public final SimScorer scorer(float boost, CollectionStatistics collectionStats, TermStatistics... termStats) {
@@ -102,13 +102,18 @@ public class TFIDFSimilarity extends Similarity {
         assert termStats.docFreq() <= collectionStats.sumDocFreq();
 
         stats.setNumberOfDocuments(collectionStats.docCount());
-        stats.setNumberOfFieldTokens(collectionStats.sumTotalTermFreq());
-        stats.setAvgFieldLength(collectionStats.sumTotalTermFreq() / (double) collectionStats.docCount());
+        //stats.setNumberOfFieldTokens(collectionStats.sumTotalTermFreq());
+        //stats.setAvgFieldLength(collectionStats.sumTotalTermFreq() / (double) collectionStats.docCount());
         stats.setDocFreq(termStats.docFreq());
-        stats.setTotalTermFreq(termStats.totalTermFreq());
+        //stats.setTotalTermFreq(termStats.totalTermFreq());
     }
 
 
+    /**
+     * Klasse, die bei der Initialisierung Informationen zu einem Suchterm und der Dokumentenmenge erhält. Beim Zugriff
+     * auf die Klasse ueber {@link TFIDFSimilarity.TFIDFSimScorer#score(float freq, long norm)} kommen die zwei zusaetzlichen
+     * Informationen Termhaeufigkeit und Dokumentenlaenge hinzu und der Score kann berechnet werden.
+     */
     static final class TFIDFSimScorer extends SimScorer {
 
         final BasicStats stats;
@@ -137,12 +142,13 @@ public class TFIDFSimilarity extends Similarity {
         @Override
         public Explanation explain(Explanation freq, long norm) {
             return Explanation.match(this.score(freq.getValue().floatValue(), norm),
-                    "Math.max(0.0f, boost[" + stats.getBoost() + "] * tf[" + tf(freq.getValue().floatValue(), decodeNorm(norm)) + "] * idf[" + idf() + "], with freq of:", Collections.singleton(freq));
+                    "Math.max(0.0f, boost[" + stats.getBoost() + "] * tf[" + tf(freq.getValue().floatValue(),
+                            decodeNorm(norm)) + "] * idf[" + idf() + "], with freq of:", Collections.singleton(freq));
         }
     }
 
     /**
-     * copied from org.apache.lucene.search.similarities.MultiSimilarity
+     * copied from {@link org.apache.lucene.search.similarities.MultiSimilarity}
      */
     static class MultiSimScorer extends SimScorer {
         private final SimScorer[] subScorers;
@@ -166,7 +172,7 @@ public class TFIDFSimilarity extends Similarity {
             for ( SimScorer subScorer : subScorers ) {
                 subs.add(subScorer.explain(freq, norm));
             }
-            return Explanation.match(score(freq.getValue().floatValue(), norm), "sum of:", subs);
+            return Explanation.match(score(freq.getValue().floatValue(), norm), "mss sum of:", subs);
         }
     }
 }

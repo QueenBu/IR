@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class SentimentValues {
@@ -41,6 +42,7 @@ public class SentimentValues {
 
     /**
      * zaehlt die "sentiment words" in einem Dokument
+     *
      * @param docTerms Inhalt des Dokuments
      * @return Anzahl der erkannten "sentiment words"
      */
@@ -50,12 +52,13 @@ public class SentimentValues {
 
     /**
      * gibt einen relativen "sentiment Wert" fuer ein Dokument
-     * @param docTerm Inhalt des Dokuments
+     *
+     * @param documentContent Inhalt des Dokuments
      * @return absolute Anzahl der "sentiment words" geteilt durch die Gesamtzahl der Woerter im Dokument
      */
-    public static double relativeSentiment(String docTerm) {
+    public static double relativeSentiment(String documentContent) {
         // W+  =  at least one non-word character which mean all character not a-z,A-Z,0-9,_
-        String[] docTerms = docTerm.split("\\W+");
+        String[] docTerms = documentContent.split("\\W+");
         return (double) absoluteSentiment(docTerms) / docTerms.length;
     }
 

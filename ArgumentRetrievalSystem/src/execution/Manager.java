@@ -1,9 +1,7 @@
 package execution;
 
 import lucene.Indexer;
-import lucene.LuceneConstants;
 import lucene.Searcher;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.TopDocs;
 import org.w3c.dom.Element;
@@ -45,7 +43,7 @@ public class Manager {
 
     /**
      * standard start method.<p>
-     *
+     * <p>
      * tira compatible output
      */
     public void start() {
@@ -81,20 +79,14 @@ public class Manager {
     }
 
     /**
-     * searches for the given query and prints the results on screen.
+     * searches for the given query.
      *
      * @param searchQuery to be searched for
-     * @throws IOException if {@link Searcher#search(String searchQuery)} throws it
+     * @throws IOException    if {@link Searcher#search(String searchQuery)} throws it
      * @throws ParseException if {@link Searcher#search(String searchQuery)} throws it
      */
     private void search(String searchQuery) throws IOException, ParseException {
         TopDocs hits = searcher.search(searchQuery);
-        System.out.println(hits.totalHits + " documents found.");
-        for ( int i = 0; i < hits.scoreDocs.length; i++ ) {
-            Document doc = searcher.getDocument(hits.scoreDocs[ i ]);
-            System.out.println(i + 1 + ".\nText: " + doc.get(LuceneConstants.CONCLUSION) + "\nPremises: " + doc.get(LuceneConstants.PREMISES) + "\n");
-        }
-
     }
 
     /**
@@ -126,6 +118,7 @@ public class Manager {
 
     /**
      * writes the output read by {@link Manager#searchTopics()} to run.txt
+     *
      * @throws IOException if the file couldnt be written.
      */
     private void writeOutput() throws IOException {
